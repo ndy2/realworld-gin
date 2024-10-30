@@ -30,7 +30,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	userRepo := user.NewMysqlUserRepo(db)
+	// Auth
+	authRepo := auth.NewMysqlRepo(db)
+	authLogic := auth.NewLogic(authRepo)
+
+	// User
+	userRepo := user.NewMysqlRepo(db)
 	userLogic := user.NewLogic(userRepo)
 
 	api := r.Group("/api")
@@ -44,8 +49,8 @@ func main() {
 		// users
 		users := api.Group("/users")
 		{
-			users.POST("/login", route.HandleJsonRootMiddleware("user", "user"), auth.Authentication)
-			users.POST("/", route.HandleJsonRootMiddleware("user", "user"), user.RegisterHandler(&userLogic))
+			users.POST("/login", common.HandleJsonRootMiddleware("user", "user"), auth.AuthenticationHandler(&authLogic))
+			users.POST("/", common.HandleJsonRootMiddleware("user", "user"), user.RegisterHandler(&userLogic))
 		}
 	}
 
