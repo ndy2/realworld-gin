@@ -1,13 +1,5 @@
 package user
 
-// Registration
-type registrationRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-type registrationResponse userResponse
-
 // GetCurrentUser
 type getCurrentUserResponse userResponse
 

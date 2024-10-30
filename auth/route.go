@@ -8,9 +8,21 @@ import (
 )
 
 func Authentication(c *gin.Context) {
-	userData, _ := c.Get("rootData")
+	type loginRequest struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	type loginResponse struct {
+		Email    string `json:"email"`
+		Token    string `json:"token"`
+		Username string `json:"username"`
+		Bio      string `json:"bio"`
+		Image    string `json:"image"`
+	}
+
+	data, _ := c.Get("rootData")
 	var req loginRequest
-	if err := json.Unmarshal(userData.(json.RawMessage), &req); err != nil {
+	if err := json.Unmarshal(data.(json.RawMessage), &req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user data format"})
 		return
 	}

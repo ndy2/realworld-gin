@@ -1,13 +1,38 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/gin-gonic/gin"
+	"github.com/go-sql-driver/mysql"
+	"log"
 	"ndy/realworld-gin/auth"
 	"ndy/realworld-gin/route"
+	"ndy/realworld-gin/user"
 )
 
 func main() {
+	// Create a new Gin application
 	r := gin.Default()
+
+	// Capture connection properties
+	var db *sql.DB
+	cfg := mysql.Config{
+		User:   "root",
+		Passwd: "password",
+		Net:    "tcp",
+		Addr:   "localhost:3306",
+		DBName: "realworld",
+	}
+	// Get a database handle
+	var err error
+	db, err = sql.Open("mysql", cfg.FormatDSN())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	userRepo := user.NewMysqlUserRepo(db)
+	userLogic := user.NewLogic(userRepo)
+
 	api := r.Group("/api")
 	{
 		api.GET("/ping", func(c *gin.Context) {
@@ -15,10 +40,12 @@ func main() {
 				"message": "pong",
 			})
 		})
+
+		// users
 		users := api.Group("/users")
 		{
 			users.POST("/login", route.HandleJsonRootMiddleware("user", "user"), auth.Authentication)
-			//users.POST("/", route.HandleJsonRootMiddleware("user", "user"), auth.Registration)
+			users.POST("/", route.HandleJsonRootMiddleware("user", "user"), user.RegisterHandler(&userLogic))
 		}
 	}
 
