@@ -86,3 +86,23 @@ func (repo *MysqlRepo) FindProfileByID(profileID int) (Profile, error) {
 	}
 	return profile, nil
 }
+
+// UpdateUser 는 주어진 사용자 ID에 해당하는 사용자 정보를 업데이트합니다.
+func (repo *MysqlRepo) UpdateUser(id int, user User) error {
+	query := "UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?"
+	_, err := repo.db.Exec(query, user.Username, user.Email, user.Password, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateProfile 는 주어진 프로필 ID에 해당하는 프로필 정보를 업데이트합니다.
+func (repo *MysqlRepo) UpdateProfile(id int, profile Profile) error {
+	query := "UPDATE profiles SET bio = ?, image = ? WHERE id = ?"
+	_, err := repo.db.Exec(query, profile.Bio, profile.Image, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -68,5 +69,62 @@ func (l Logic) GetCurrentUser(userID, profileId int) (GetCurrentUserResponse, er
 		Email:    user.Email,
 		Bio:      profile.Bio,
 		Image:    profile.Image,
+		Token:    "",
+	}, nil
+}
+
+// UpdateUser 는 사용자 정보를 업데이트합니다.
+func (l Logic) UpdateUser(ctx context.Context, email, username, password, image, bio string) (UpdateUserResponse, error) {
+	// 사용자 ID를 context 에서 추출합니다.
+	userId, _ := ctx.Value("userId").(int)
+	profileId, _ := ctx.Value("profileId").(int)
+
+	// 비밀번호를 해시화합니다.
+	if password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			return UpdateUserResponse{}, err
+		}
+		password = string(hashedPassword)
+	}
+
+	// 사용자 정보를 업데이트합니다.
+	err := l.repo.UpdateUser(userId, User{
+		Username: username,
+		Email:    email,
+		Password: password,
+	})
+	if err != nil {
+		return UpdateUserResponse{}, err
+	}
+
+	// 프로필 정보를 업데이트합니다.
+	err = l.repo.UpdateProfile(profileId, Profile{
+		Bio:   bio,
+		Image: image,
+	})
+	if err != nil {
+		return UpdateUserResponse{}, err
+	}
+
+	// 사용자 정보를 조회합니다.
+	updatedUser, err := l.repo.FindUserByID(userId)
+	if err != nil {
+		return UpdateUserResponse{}, err
+	}
+
+	// 프로필 정보를 조회합니다.
+	updatedProfile, err := l.repo.FindProfileByID(profileId)
+	if err != nil {
+		return UpdateUserResponse{}, err
+	}
+
+	// 업데이트된 사용자 정보를 반환합니다.
+	return UpdateUserResponse{
+		Username: updatedUser.Username,
+		Email:    updatedUser.Email,
+		Bio:      updatedProfile.Bio,
+		Image:    updatedProfile.Image,
+		Token:    "",
 	}, nil
 }

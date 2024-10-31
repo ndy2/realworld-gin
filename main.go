@@ -62,6 +62,11 @@ func main() {
 				middleware.Auth(),
 				middleware.JsonRoot("", "user"),
 				user.GetCurrentUserHandler(&userLogic))
+			users.PUT(
+				"/",
+				middleware.Auth(),
+				middleware.JsonRoot("user", "user"),
+				user.UpdateUserHandler(&userLogic))
 		}
 	}
 
