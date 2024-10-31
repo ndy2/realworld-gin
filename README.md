@@ -1,21 +1,22 @@
 # realworld-gin
 
+- see https://realworld-docs.netlify.app/specifications/backend/endpoints/
+
 ## Auth/User
 
-- [ ] Authentication
+- [x] Authentication
    - [x] Endpoint
-   - [ ] JWT
-   - [ ] Insert Profile to DB (using goroutine?)
-- [ ] Register
+   - [x] JWT
+- [x] Register
     - [x] Endpoint
-    - [ ] Profile
-- [ ] Get current user
+    - [x] Insert Profile to DB
+- [x] Get current user
 - [ ] Update
 
 ## Profile
 
-- [ ] Get
-- [ ] Update
+- [ ] Get Profile
+- [ ] Update User (Profile)
 
 ### Follow
 
@@ -47,13 +48,17 @@
 - [ ] Get Tags
 
 ## Common
-
+- [ ] Authentication
+  - [x] Required
+  - [ ] Optional
 - [ ] Json Marshal/Unmarshal
   - [x] on success (single response)
   - [ ] on success (list response)
   - [ ] on error (Error handling)
 - [ ] Configuration
 - [x] Database (MySQL)
+  - [ ] Setup
+  - [ ] Connection
 - [ ] Testing
     - [ ] Unit Tests Samples
         - [ ] routes

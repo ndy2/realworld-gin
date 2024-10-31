@@ -47,3 +47,26 @@ func (l Logic) Register(
 	// 새로 등록된 사용자 ID를 반환합니다.
 	return id, nil
 }
+
+// GetCurrentUser 는 현재 사용자 정보를 반환합니다.
+func (l Logic) GetCurrentUser(userID, profileId int) (GetCurrentUserResponse, error) {
+	// 사용자 정보를 조회합니다.
+	user, err := l.repo.FindUserByID(userID)
+	if err != nil {
+		return GetCurrentUserResponse{}, err
+	}
+
+	// 프로필 정보를 조회합니다.
+	profile, err := l.repo.FindProfileByID(profileId)
+	if err != nil {
+		return GetCurrentUserResponse{}, err
+	}
+
+	// 사용자 정보와 프로필 정보를 반환합니다.
+	return GetCurrentUserResponse{
+		Username: user.Username,
+		Email:    user.Email,
+		Bio:      profile.Bio,
+		Image:    profile.Image,
+	}, nil
+}

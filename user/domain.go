@@ -6,10 +6,21 @@ type User struct {
 	Password string
 }
 
+type Profile struct {
+	Bio   string
+	Image string
+}
+
 type Repo interface {
 	// CheckUserExists checks if a user with the given email exists
 	CheckUserExists(email string) (bool, error)
 
 	// InsertUser insert a new user
 	InsertUser(u User) (int, error)
+
+	// FindUserByID finds a user by ID
+	FindUserByID(userID int) (User, error)
+
+	// FindProfileByID finds a profile by ID
+	FindProfileByID(profileID int) (Profile, error)
 }

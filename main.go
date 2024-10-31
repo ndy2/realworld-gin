@@ -6,7 +6,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"log"
 	"ndy/realworld-gin/auth"
-	"ndy/realworld-gin/route"
+	"ndy/realworld-gin/middleware"
 	"ndy/realworld-gin/user"
 )
 
@@ -49,8 +49,19 @@ func main() {
 		// users
 		users := api.Group("/users")
 		{
-			users.POST("/login", common.HandleJsonRootMiddleware("user", "user"), auth.AuthenticationHandler(&authLogic))
-			users.POST("/", common.HandleJsonRootMiddleware("user", "user"), user.RegisterHandler(&userLogic))
+			users.POST(
+				"/login",
+				middleware.JsonRoot("user", "user"),
+				auth.AuthenticationHandler(&authLogic))
+			users.POST(
+				"/",
+				middleware.JsonRoot("user", "user"),
+				user.RegisterHandler(&userLogic))
+			users.GET(
+				"/",
+				middleware.Auth(),
+				middleware.JsonRoot("", "user"),
+				user.GetCurrentUserHandler(&userLogic))
 		}
 	}
 
