@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 )
 
 type Logic struct {
@@ -78,6 +79,7 @@ func (l Logic) UpdateUser(ctx context.Context, email, username, password, image,
 	// 사용자 ID를 context 에서 추출합니다.
 	userId, _ := ctx.Value("userId").(int)
 	profileId, _ := ctx.Value("profileId").(int)
+	println("userId: ", userId)
 
 	// 비밀번호를 해시화합니다.
 	if password != "" {
@@ -95,6 +97,7 @@ func (l Logic) UpdateUser(ctx context.Context, email, username, password, image,
 		Password: password,
 	})
 	if err != nil {
+		log.Println("UpdatedUser | UpdateUser failed error: ", err)
 		return UpdateUserResponse{}, err
 	}
 
@@ -104,18 +107,21 @@ func (l Logic) UpdateUser(ctx context.Context, email, username, password, image,
 		Image: image,
 	})
 	if err != nil {
+		log.Println("UpdatedUser | UpdateProfile failed error: ", err)
 		return UpdateUserResponse{}, err
 	}
 
 	// 사용자 정보를 조회합니다.
 	updatedUser, err := l.repo.FindUserByID(userId)
 	if err != nil {
+		log.Println("UpdatedUser | FindUserByID failed error: ", err)
 		return UpdateUserResponse{}, err
 	}
 
 	// 프로필 정보를 조회합니다.
 	updatedProfile, err := l.repo.FindProfileByID(profileId)
 	if err != nil {
+		log.Println("UpdatedUser | FindProfileByID failed error: ", err)
 		return UpdateUserResponse{}, err
 	}
 

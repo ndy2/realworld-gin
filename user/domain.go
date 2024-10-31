@@ -25,8 +25,8 @@ type Repo interface {
 	FindProfileByID(profileID int) (Profile, error)
 
 	// UpdateUser updates a user
-	UpdateUser(id int, user User) error
+	UpdateUser(userId int, user User) error
 
 	// UpdateProfile updates a profile
-	UpdateProfile(id int, profile Profile) error
+	UpdateProfile(profileId int, profile Profile) error
 }

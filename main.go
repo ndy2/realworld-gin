@@ -38,6 +38,12 @@ func main() {
 	userRepo := user.NewMysqlRepo(db)
 	userLogic := user.NewLogic(userRepo)
 
+	// Middlewares
+	um := middleware.JsonRoot("user", "user")
+	umRespOnly := middleware.JsonRoot("", "user")
+	am := middleware.Auth()
+
+	// Routes
 	api := r.Group("/api")
 	{
 		api.GET("/ping", func(c *gin.Context) {
@@ -47,28 +53,15 @@ func main() {
 		})
 
 		// users
-		users := api.Group("/users")
-		{
-			users.POST(
-				"/login",
-				middleware.JsonRoot("user", "user"),
-				auth.AuthenticationHandler(&authLogic))
-			users.POST(
-				"/",
-				middleware.JsonRoot("user", "user"),
-				user.RegisterHandler(&userLogic))
-			users.GET(
-				"/",
-				middleware.Auth(),
-				middleware.JsonRoot("", "user"),
-				user.GetCurrentUserHandler(&userLogic))
-			users.PUT(
-				"/",
-				middleware.Auth(),
-				middleware.JsonRoot("user", "user"),
-				user.UpdateUserHandler(&userLogic))
-		}
+		api.POST("/users/login", um, auth.AuthenticationHandler(&authLogic))
+		api.POST("/users", um, user.RegisterHandler(&userLogic))
+		api.GET("/user", am, umRespOnly, user.GetCurrentUserHandler(&userLogic))
+		api.PUT("/user", am, um, user.UpdateUserHandler(&userLogic))
 	}
 
-	r.Run(":8080") // listen and serve on 0.0.0.0:8080
+	// Run the application
+	err = r.Run(":8080")
+	if err != nil {
+		return
+	}
 }

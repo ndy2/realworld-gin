@@ -13,10 +13,10 @@ const jwtSecret = "your-256-bit-secret"
 func generate(u User, p Profile) (string, error) {
 	// 토큰 생성
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId":   u.Id,
-		"profile":  p.Id,
-		"username": p.Username,
-		"exp":      time.Now().Add(jwtExpire).Unix(),
+		"userId":    u.Id,
+		"profileId": p.Id,
+		"username":  p.Username,
+		"exp":       time.Now().Add(jwtExpire).Unix(),
 	})
 
 	// 토큰을 서명합니다.

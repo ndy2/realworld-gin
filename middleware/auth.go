@@ -27,12 +27,12 @@ func Auth() gin.HandlerFunc {
 		}
 
 		// 검증된 토큰에서 사용자 ID, 프로필 ID 를 추출
-		userID := int(claims["userId"].(float64))
-		profileID := int(claims["profile"].(float64))
+		userId := int(claims["userId"].(float64))
+		profileId := int(claims["profileId"].(float64))
 
 		// 추출한 사용자 ID, 프로필 ID 를 context 에 저장
-		c.Set("userID", userID)
-		c.Set("profileID", profileID)
+		c.Set("userId", userId)
+		c.Set("profileId", profileId)
 
 		// 다음 핸들러로 요청을 전달
 		c.Next()

@@ -11,12 +11,12 @@
     - [x] Endpoint
     - [x] Insert Profile to DB
 - [x] Get current user
-- [ ] Update
+- [x] Update
 
 ## Profile
 
 - [ ] Get Profile
-- [ ] Update User (Profile)
+- [x] Update User (Profile)
 
 ### Follow
 

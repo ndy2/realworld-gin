@@ -44,11 +44,11 @@ type RegistrationResponse userResponse
 func GetCurrentUserHandler(l *Logic) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get the user ID from the context
-		userID, _ := c.Get("userID")
-		profileID, _ := c.Get("profileID")
+		userId, _ := c.Get("userId")
+		profileId, _ := c.Get("profileId")
 
 		// Get the current user
-		resp, err := l.GetCurrentUser(userID.(int), profileID.(int))
+		resp, err := l.GetCurrentUser(userId.(int), profileId.(int))
 		resp.Token = strings.Replace(c.GetHeader("Authorization"), "Token ", "", 1)
 
 		// 예외 처리 및 응답 반환
@@ -73,9 +73,9 @@ func UpdateUserHandler(l *Logic) gin.HandlerFunc {
 		}
 
 		// 사용자 ID 획득
-		userID, _ := c.Get("userID")
+		userID, _ := c.Get("userId")
 		profileId, _ := c.Get("profileId")
-		ctx := context.WithValue(c, "userID", userID)
+		ctx := context.WithValue(c, "userId", userID)
 		ctx = context.WithValue(ctx, "profileId", profileId)
 
 		// 사용자 정보 업데이트
