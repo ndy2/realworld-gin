@@ -9,7 +9,7 @@ import (
 
 var Log *zap.Logger
 
-// 로거를 초기화하는 함수
+// InitLogger 함수는 로거를 초기화합니다.
 func InitLogger() {
 	// 커스텀 인코더 설정
 	encoderConfig := zapcore.EncoderConfig{
@@ -37,11 +37,24 @@ func InitLogger() {
 	Log = zap.New(core, zap.AddCaller())
 }
 
-// 시간 포맷을 맞추기 위한 커스텀 인코더
+// customTimeEncoder 함수는 시간을 원하는 형식으로 출력합니다.
 func customTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format("2006-01-02 15:04:05")) // 원하는 시간 형식
+	enc.AppendString(t.Format("2006/01/02 15:04:05")) // 원하는 시간 형식
 }
 
+// Sync 함수는 로그를 출력합니다.
 func Sync() {
 	_ = Log.Sync()
+}
+
+func Info(msg string, fields ...zapcore.Field) {
+	Log.Info(msg, fields...)
+}
+
+func Error(msg string, fields ...zapcore.Field) {
+	Log.Error(msg, fields...)
+}
+
+func Fatal(msg string, fields ...zapcore.Field) {
+	Log.Fatal(msg, fields...)
 }

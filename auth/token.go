@@ -2,7 +2,8 @@ package auth
 
 import (
 	"github.com/golang-jwt/jwt/v4"
-	"log"
+	"go.uber.org/zap"
+	"ndy/realworld-gin/logger"
 	"time"
 )
 
@@ -22,7 +23,7 @@ func generate(u User, p Profile) (string, error) {
 	// 토큰을 서명합니다.
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
-		log.Fatalf("토큰 서명에 실패했습니다: %v", err)
+		logger.Error("Failed to sign token", zap.Error(err))
 		return "", err
 	}
 
@@ -36,13 +37,13 @@ func Verify(token string) (jwt.MapClaims, error) {
 		return []byte(jwtSecret), nil
 	})
 	if err != nil {
-		log.Printf("토큰 파싱에 실패했습니다: %v", err)
+		logger.Error("Failed to parse token", zap.Error(err))
 		return nil, err
 	}
 
 	// 토큰이 유효한지 검증합니다.
 	if !parsedToken.Valid {
-		log.Printf("유효하지 않은 토큰입니다.")
+		logger.Error("Invalid token")
 		return nil, err
 	}
 

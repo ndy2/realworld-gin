@@ -22,7 +22,7 @@ func (repo *MysqlRepo) CheckUserExists(email string) (bool, error) {
 	query := "SELECT EXISTS (SELECT 1 FROM users WHERE email = ?)"
 	err := repo.db.QueryRow(query, email).Scan(&exists)
 	if err != nil {
-		logger.Log.Error("CheckUserExists failed", zap.Error(err))
+		logger.Error("CheckUserExists failed", zap.Error(err))
 		return false, err
 	}
 	return exists, nil
@@ -33,21 +33,21 @@ func (repo *MysqlRepo) InsertUser(u User) (int, error) {
 	query := "INSERT INTO users (username, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
 	result, err := repo.db.Exec(query, u.Username, u.Email, u.Password, time.Now(), time.Now())
 	if err != nil {
-		logger.Log.Error("InsertUser failed", zap.Error(err))
+		logger.Error("InsertUser failed", zap.Error(err))
 		return 0, err
 	}
 
 	// 새로 삽입된 사용자 ID를 가져옵니다.
 	userID, err := result.LastInsertId()
 	if err != nil {
-		logger.Log.Error("InsertUser failed", zap.Error(err))
+		logger.Error("InsertUser failed", zap.Error(err))
 		return 0, err
 	}
 
 	// 새로운 프로필을 등록합니다.
 	_, err = repo.insertProfile(int(userID))
 	if err != nil {
-		logger.Log.Error("InsertUser failed", zap.Error(err))
+		logger.Error("InsertUser failed", zap.Error(err))
 		return 0, err
 	}
 
@@ -59,14 +59,14 @@ func (repo *MysqlRepo) insertProfile(userId int) (int, error) {
 	query := "INSERT INTO profiles (user_id, bio, image, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
 	result, err := repo.db.Exec(query, userId, "", "", time.Now(), time.Now())
 	if err != nil {
-		logger.Log.Error("InsertProfile failed", zap.Error(err))
+		logger.Error("InsertProfile failed", zap.Error(err))
 		return 0, err
 	}
 
 	// 새로 삽입된 프로필 ID를 가져옵니다.
 	profileID, err := result.LastInsertId()
 	if err != nil {
-		logger.Log.Error("InsertProfile failed", zap.Error(err))
+		logger.Error("InsertProfile failed", zap.Error(err))
 		return 0, err
 	}
 
@@ -79,7 +79,7 @@ func (repo *MysqlRepo) FindUserByID(userID int) (User, error) {
 	query := "SELECT username, email FROM users WHERE id = ?"
 	err := repo.db.QueryRow(query, userID).Scan(&user.Username, &user.Email)
 	if err != nil {
-		logger.Log.Error("FindUserByID failed", zap.Error(err))
+		logger.Error("FindUserByID failed", zap.Error(err))
 		return User{}, err
 	}
 	return user, nil
@@ -91,7 +91,7 @@ func (repo *MysqlRepo) FindProfileByID(profileID int) (Profile, error) {
 	query := "SELECT bio, image FROM profiles WHERE id = ?"
 	err := repo.db.QueryRow(query, profileID).Scan(&profile.Bio, &profile.Image)
 	if err != nil {
-		logger.Log.Error("FindProfileByID failed", zap.Error(err))
+		logger.Error("FindProfileByID failed", zap.Error(err))
 		return Profile{}, err
 	}
 	return profile, nil
@@ -109,7 +109,7 @@ func (repo *MysqlRepo) UpdateUser(userId int, user User) error {
 
 	_, err := repo.db.Exec(query, user.Username, user.Username, user.Email, user.Email, user.Password, user.Password, userId)
 	if err != nil {
-		logger.Log.Error("UpdateUser failed", zap.Error(err))
+		logger.Error("UpdateUser failed", zap.Error(err))
 		return err
 	}
 	return nil
@@ -125,7 +125,7 @@ func (repo *MysqlRepo) UpdateProfile(profileId int, profile Profile) error {
     WHERE id = ?;`
 	_, err := repo.db.Exec(query, profile.Bio, profile.Bio, profile.Image, profile.Image, profileId)
 	if err != nil {
-		logger.Log.Error("UpdateProfile failed", zap.Error(err))
+		logger.Error("UpdateProfile failed", zap.Error(err))
 		return err
 	}
 	return nil

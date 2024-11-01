@@ -32,9 +32,11 @@ func JsonRoot(reqJsonRootKey string, respJsonRootKey string) gin.HandlerFunc {
 		// 다음 핸들러로 요청을 전달
 		c.Next()
 
-		// 감싸는 구조체 생성
-		resp, _ := c.Get("resp")
-		wrappedResponse := gin.H{respJsonRootKey: resp}
-		c.IndentedJSON(http.StatusOK, wrappedResponse)
+		// 응답이 2xx 인 경우에만 JSON 을 래핑하여 반환
+		if c.Writer.Status() >= 200 && c.Writer.Status() < 300 {
+			resp, _ := c.Get("resp")
+			wrappedResponse := gin.H{respJsonRootKey: resp}
+			c.IndentedJSON(http.StatusOK, wrappedResponse)
+		}
 	}
 }

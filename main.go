@@ -14,7 +14,7 @@ func main() {
 	logger.InitLogger()
 	defer logger.Sync()
 
-	logger.Log.Info("Application starting...")
+	logger.Info("Application starting...")
 
 	// Create a new Gin application
 	r := gin.Default()
@@ -32,7 +32,7 @@ func main() {
 	var err error
 	db, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
-		logger.Log.Fatal(err.Error())
+		logger.Fatal(err.Error())
 	}
 
 	// Auth
@@ -65,7 +65,7 @@ func main() {
 	// Run the application
 	err = r.Run(":8080")
 	if err != nil {
-		logger.Log.Fatal(err.Error())
+		logger.Fatal(err.Error())
 		return
 	}
 }

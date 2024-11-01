@@ -1,6 +1,10 @@
 package auth
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
+	"ndy/realworld-gin/logger"
+)
 
 type Logic struct {
 	repo Repo
@@ -16,24 +20,28 @@ func (l Logic) Login(email string, password string) (LoginResponse, error) {
 	// 사용자가 존재하는지 확인합니다.
 	user, err := l.repo.FindUserByEmail(email)
 	if err != nil {
+		logger.Info("FindUserByEmail failed", zap.Error(err))
 		return LoginResponse{}, err
 	}
 
 	// 비밀번호가 일치하는지 확인합니다.
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
+		logger.Info("CompareHashAndPassword failed", zap.Error(err))
 		return LoginResponse{}, err
 	}
 
 	// 프로필 정보를 조회합니다.
 	profile, err := l.repo.FindProfileByUserID(user.Id)
 	if err != nil {
+		logger.Error("FindProfileByUserID failed", zap.Error(err))
 		return LoginResponse{}, err
 	}
 
 	// 토큰을 생성합니다.
 	token, err := generate(user, profile)
 	if err != nil {
+		logger.Error("generate failed", zap.Error(err))
 		return LoginResponse{}, err
 	}
 

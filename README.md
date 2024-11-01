@@ -55,7 +55,7 @@
 - [ ] Json Marshal/Unmarshal
     - [x] on success (single response)
     - [ ] on success (list response)
-    - [ ] on error (Error handling)
+    - [x] on error (Error handling)
 - [ ] Configuration
 - [x] Database (MySQL)
     - [ ] Setup
