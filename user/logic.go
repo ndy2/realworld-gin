@@ -3,8 +3,10 @@ package user
 import (
 	"context"
 	"fmt"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"log"
+	"ndy/realworld-gin/logger"
 )
 
 type Logic struct {
@@ -25,15 +27,18 @@ func (l Logic) Register(
 	// 사용자가 이미 존재하는지 확인합니다.
 	exists, err := l.repo.CheckUserExists(email)
 	if err != nil {
+		logger.Log.Error("CheckUserExists failed", zap.Error(err))
 		return 0, err
 	}
 	if exists {
+		logger.Log.Info("User already exists", zap.String("email", email))
 		return 0, fmt.Errorf("user already exists")
 	}
 
 	// 비밀번호를 해시화합니다.
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		logger.Log.Error("GenerateFromPassword failed", zap.Error(err))
 		return 0, err
 	}
 	// 사용자를 등록합니다.
@@ -43,6 +48,7 @@ func (l Logic) Register(
 		Password: string(hashedPassword),
 	})
 	if err != nil {
+		logger.Log.Error("InsertUser failed", zap.Error(err))
 		return 0, err
 	}
 

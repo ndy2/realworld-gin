@@ -4,7 +4,8 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
-	"log"
+	"go.uber.org/zap"
+	"ndy/realworld-gin/logger"
 	"net/http"
 	"strings"
 )
@@ -14,16 +15,21 @@ func RegisterHandler(l *Logic) gin.HandlerFunc {
 		data, _ := c.Get("rootData")
 		var req RegistrationRequest
 		if err := json.Unmarshal(data.(json.RawMessage), &req); err != nil {
+			logger.Log.Info("Error registering user", zap.Error(err))
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user data format"})
 			return
 		}
-		log.Println("Registration request:", req)
+		logger.Log.Info("Registering user", zap.String("email", req.Email), zap.String("username", req.Username))
 
 		_, err := l.Register(req.Username, req.Email, req.Password)
 		if err != nil {
+			logger.Log.Info("Error registering user", zap.Error(err))
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		logger.Log.Info("Registered user", zap.String("email", req.Email), zap.String("username", req.Username))
+
+		// Return the response
 		c.Set("resp", RegistrationResponse{
 			Email:    req.Email,
 			Username: req.Username,
@@ -46,16 +52,19 @@ func GetCurrentUserHandler(l *Logic) gin.HandlerFunc {
 		// Get the user ID from the context
 		userId, _ := c.Get("userId")
 		profileId, _ := c.Get("profileId")
+		logger.Log.Info("Getting current user", zap.Int("userId", userId.(int)))
 
 		// Get the current user
 		resp, err := l.GetCurrentUser(userId.(int), profileId.(int))
-		resp.Token = strings.Replace(c.GetHeader("Authorization"), "Token ", "", 1)
-
-		// 예외 처리 및 응답 반환
 		if err != nil {
+			logger.Log.Info("Error getting current user", zap.Error(err))
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		logger.Log.Info("Got current user", zap.Int("userId", userId.(int)))
+
+		// Return the response with the token
+		resp.Token = strings.Replace(c.GetHeader("Authorization"), "Token ", "", 1)
 		c.Set("resp", resp)
 	}
 }
@@ -68,9 +77,11 @@ func UpdateUserHandler(l *Logic) gin.HandlerFunc {
 		data, _ := c.Get("rootData")
 		var req UpdateUserRequest
 		if err := json.Unmarshal(data.(json.RawMessage), &req); err != nil {
+			logger.Log.Info("Error updating user", zap.Error(err))
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user data format"})
 			return
 		}
+		logger.Log.Info("Updating user", zap.String("email", req.Email), zap.String("username", req.Username))
 
 		// 사용자 ID 획득
 		userID, _ := c.Get("userId")
@@ -80,13 +91,15 @@ func UpdateUserHandler(l *Logic) gin.HandlerFunc {
 
 		// 사용자 정보 업데이트
 		resp, err := l.UpdateUser(ctx, req.Email, req.Username, req.Password, req.Image, req.Bio)
-		resp.Token = strings.Replace(c.GetHeader("Authorization"), "Token ", "", 1)
-
-		// 예외 처리 및 응답 반환
 		if err != nil {
+			logger.Log.Info("Error updating user", zap.Error(err))
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		logger.Log.Info("Updated user", zap.String("email", req.Email), zap.String("username", req.Username))
+
+		// Return the response with the token
+		resp.Token = strings.Replace(c.GetHeader("Authorization"), "Token ", "", 1)
 		c.Set("resp", resp)
 	}
 }

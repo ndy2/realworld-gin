@@ -4,13 +4,18 @@ import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
-	"log"
 	"ndy/realworld-gin/auth"
+	"ndy/realworld-gin/logger"
 	"ndy/realworld-gin/middleware"
 	"ndy/realworld-gin/user"
 )
 
 func main() {
+	logger.InitLogger()
+	defer logger.Sync()
+
+	logger.Log.Info("Application starting...")
+
 	// Create a new Gin application
 	r := gin.Default()
 
@@ -27,7 +32,7 @@ func main() {
 	var err error
 	db, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Fatal(err.Error())
 	}
 
 	// Auth
@@ -44,14 +49,12 @@ func main() {
 	am := middleware.Auth()
 
 	// Routes
+	r.GET("/ping", func(c *gin.Context) {
+		c.String(200, "pong")
+	})
+
 	api := r.Group("/api")
 	{
-		api.GET("/ping", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"message": "pong",
-			})
-		})
-
 		// users
 		api.POST("/users/login", um, auth.AuthenticationHandler(&authLogic))
 		api.POST("/users", um, user.RegisterHandler(&userLogic))
@@ -62,6 +65,7 @@ func main() {
 	// Run the application
 	err = r.Run(":8080")
 	if err != nil {
+		logger.Log.Fatal(err.Error())
 		return
 	}
 }

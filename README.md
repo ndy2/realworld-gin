@@ -5,8 +5,8 @@
 ## Auth/User
 
 - [x] Authentication
-   - [x] Endpoint
-   - [x] JWT
+    - [x] Endpoint
+    - [x] JWT
 - [x] Register
     - [x] Endpoint
     - [x] Insert Profile to DB
@@ -48,23 +48,25 @@
 - [ ] Get Tags
 
 ## Common
+
 - [ ] Authentication
-  - [x] Required
-  - [ ] Optional
+    - [x] Required
+    - [ ] Optional
 - [ ] Json Marshal/Unmarshal
-  - [x] on success (single response)
-  - [ ] on success (list response)
-  - [ ] on error (Error handling)
+    - [x] on success (single response)
+    - [ ] on success (list response)
+    - [ ] on error (Error handling)
 - [ ] Configuration
 - [x] Database (MySQL)
-  - [ ] Setup
-  - [ ] Connection
+    - [ ] Setup
+    - [ ] Connection
 - [ ] Testing
     - [ ] Unit Tests Samples
         - [ ] routes
         - [ ] logic
         - [ ] repo
-    - [ ] Github Actions - Run tests on push 
+    - [ ] Github Actions - Run tests on push
         - [ ] Unit Tests
         - [ ] Integration Test (newman/docker-compose)
 - [ ] Documentation
+- [x] Logging
