@@ -71,8 +71,9 @@
     - [x] on error (Error handling)
 - [ ] Configuration
 - [x] Database (MySQL)
-    - [ ] Setup
-    - [ ] Connection
+    - [x] Setup
+    - [ ] Connection Pool
+    - [ ] ~~Transaction~~ - SKIP FOR NOW
 - [ ] Testing
     - [ ] Unit Tests Samples
         - [ ] routes
@@ -82,4 +83,4 @@
         - [x] Unit Tests
         - [ ] Integration Test (newman/docker-compose)
 - [ ] Documentation
-- [x] Logging
+- [x] Logging (Zap)
