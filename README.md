@@ -1,6 +1,17 @@
 # realworld-gin
 
+![logo](logo.png)
+
+- 90% of the code is written by [Github Copilot](https://github.com/features/copilot)... I just modified it a bit.
 - see https://realworld-docs.netlify.app/specifications/backend/endpoints/
+
+**Built with**
+
+![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
+![ChatGPT](https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white)
+![Gin](https://img.shields.io/badge/Gin-000000?style=for-the-badge&logo=go&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Zap](https://img.shields.io/badge/Zap-00ADD8?style=for-the-badge&logo=go&logoColor=white)
 
 ## Auth/User
 
