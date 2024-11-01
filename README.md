@@ -78,8 +78,8 @@
         - [ ] routes
         - [ ] logic
         - [ ] repo
-    - [ ] Github Actions - Run tests on push
-        - [ ] Unit Tests
+    - [x] Github Actions - Run tests on push
+        - [x] Unit Tests
         - [ ] Integration Test (newman/docker-compose)
 - [ ] Documentation
 - [x] Logging
