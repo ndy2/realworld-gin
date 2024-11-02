@@ -46,15 +46,3 @@ func customTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 func Sync() {
 	_ = Log.Sync()
 }
-
-func Info(msg string, fields ...zapcore.Field) {
-	Log.Info(msg, fields...)
-}
-
-func Error(msg string, fields ...zapcore.Field) {
-	Log.Error(msg, fields...)
-}
-
-func Fatal(msg string, fields ...zapcore.Field) {
-	Log.Fatal(msg, fields...)
-}

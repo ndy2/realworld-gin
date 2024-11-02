@@ -26,18 +26,18 @@ func (l Logic) Register(
 	// 사용자가 이미 존재하는지 확인합니다.
 	exists, err := l.repo.CheckUserExists(email)
 	if err != nil {
-		logger.Error("CheckUserExists failed", zap.Error(err))
+		logger.Log.Error("CheckUserExists failed", zap.Error(err))
 		return 0, err
 	}
 	if exists {
-		logger.Info("User already exists", zap.String("email", email))
+		logger.Log.Info("User already exists", zap.String("email", email))
 		return 0, fmt.Errorf("user already exists")
 	}
 
 	// 비밀번호를 해시화합니다.
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		logger.Error("GenerateFromPassword failed", zap.Error(err))
+		logger.Log.Error("GenerateFromPassword failed", zap.Error(err))
 		return 0, err
 	}
 	// 사용자를 등록합니다.
@@ -47,7 +47,7 @@ func (l Logic) Register(
 		Password: string(hashedPassword),
 	})
 	if err != nil {
-		logger.Error("InsertUser failed", zap.Error(err))
+		logger.Log.Error("InsertUser failed", zap.Error(err))
 		return 0, err
 	}
 
@@ -101,7 +101,7 @@ func (l Logic) UpdateUser(ctx context.Context, email, username, password, image,
 		Password: password,
 	})
 	if err != nil {
-		logger.Error("UpdateUser failed", zap.Error(err))
+		logger.Log.Error("UpdateUser failed", zap.Error(err))
 		return UpdateUserResponse{}, err
 	}
 
@@ -111,21 +111,21 @@ func (l Logic) UpdateUser(ctx context.Context, email, username, password, image,
 		Image: image,
 	})
 	if err != nil {
-		logger.Error("UpdateProfile failed", zap.Error(err))
+		logger.Log.Error("UpdateProfile failed", zap.Error(err))
 		return UpdateUserResponse{}, err
 	}
 
 	// 사용자 정보를 조회합니다.
 	updatedUser, err := l.repo.FindUserByID(userId)
 	if err != nil {
-		logger.Error("FindUserByID failed", zap.Error(err))
+		logger.Log.Error("FindUserByID failed", zap.Error(err))
 		return UpdateUserResponse{}, err
 	}
 
 	// 프로필 정보를 조회합니다.
 	updatedProfile, err := l.repo.FindProfileByID(profileId)
 	if err != nil {
-		logger.Error("FindProfileByID failed", zap.Error(err))
+		logger.Log.Error("FindProfileByID failed", zap.Error(err))
 		return UpdateUserResponse{}, err
 	}
 

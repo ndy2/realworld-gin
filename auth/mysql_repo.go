@@ -21,7 +21,7 @@ func (repo *MysqlRepo) FindUserByEmail(email string) (User, error) {
 	query := "SELECT id, email, password FROM users WHERE email = ?"
 	err := repo.db.QueryRow(query, email).Scan(&user.Id, &user.Email, &user.Password)
 	if err != nil {
-		logger.Error("FindUserByEmail failed", zap.Error(err))
+		logger.Log.Error("FindUserByEmail failed", zap.Error(err))
 		return User{}, err
 	}
 	return user, nil
@@ -33,7 +33,7 @@ func (repo *MysqlRepo) FindProfileByUserID(userID int) (Profile, error) {
 	query := "SELECT id, user_id, bio, image FROM profiles WHERE user_id = ?"
 	err := repo.db.QueryRow(query, userID).Scan(&profile.Id, &profile.UserID, &profile.Bio, &profile.Image)
 	if err != nil {
-		logger.Error("FindProfileByUserID failed", zap.Error(err))
+		logger.Log.Error("FindProfileByUserID failed", zap.Error(err))
 		return Profile{}, err
 	}
 	return profile, nil

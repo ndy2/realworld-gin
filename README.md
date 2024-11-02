@@ -75,12 +75,12 @@
     - [ ] Connection Pool
     - [ ] ~~Transaction~~ - SKIP FOR NOW
 - [ ] Testing
-    - [ ] Unit Tests Samples
+    - [ ] Unit Tests Samples (w/ go-mock, go-cmp)
         - [ ] routes
-        - [ ] logic
-        - [ ] repo
+        - [x] logic
+        - [x] repo (w/ sqlmock)
     - [x] Github Actions - Run tests on push
         - [x] Unit Tests
-        - [ ] Integration Test (newman/docker-compose)
+        - [ ] Integration Test (w/ newman/docker-compose)
 - [ ] Documentation
-- [x] Logging (Zap)
+- [x] Logging (w/ Zap)

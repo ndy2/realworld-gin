@@ -23,7 +23,7 @@ func generate(u User, p Profile) (string, error) {
 	// 토큰을 서명합니다.
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
-		logger.Error("Failed to sign token", zap.Error(err))
+		logger.Log.Error("Failed to sign token", zap.Error(err))
 		return "", err
 	}
 
@@ -37,13 +37,13 @@ func Verify(token string) (jwt.MapClaims, error) {
 		return []byte(jwtSecret), nil
 	})
 	if err != nil {
-		logger.Error("Failed to parse token", zap.Error(err))
+		logger.Log.Error("Failed to parse token", zap.Error(err))
 		return nil, err
 	}
 
 	// 토큰이 유효한지 검증합니다.
 	if !parsedToken.Valid {
-		logger.Error("Invalid token")
+		logger.Log.Error("Invalid token")
 		return nil, err
 	}
 

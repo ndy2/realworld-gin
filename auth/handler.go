@@ -16,27 +16,27 @@ func AuthenticationHandler(l *Logic) gin.HandlerFunc {
 		data, _ := c.Get("rootData")
 		var req LoginRequest
 		if err := json.Unmarshal(data.(json.RawMessage), &req); err != nil {
-			logger.Info("Error authenticating user", zap.Error(err))
+			logger.Log.Info("Error authenticating user", zap.Error(err))
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user data format"})
 			return
 		}
-		logger.Info("Authenticating user", zap.String("email", req.Email))
+		logger.Log.Info("Authenticating user", zap.String("email", req.Email))
 
 		// 로그인, 토큰 생성
 		resp, err := l.Login(req.Email, req.Password)
 
 		// 예외 처리 및 응답 반환
 		if err != nil {
-			logger.Info("Error authenticating user", zap.Error(err))
+			logger.Log.Info("Error authenticating user", zap.Error(err))
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		if errors.Is(err, ErrUserNotFound) {
-			logger.Info("Error authenticating user", zap.Error(err))
+			logger.Log.Info("Error authenticating user", zap.Error(err))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 			return
 		}
-		logger.Info("Authenticated user", zap.String("email", req.Email))
+		logger.Log.Info("Authenticated user", zap.String("email", req.Email))
 
 		// 응답 반환
 		c.Set("resp", resp)
