@@ -20,38 +20,33 @@ func TestLogic_Login(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	type fields struct {
-		repo Repo
-	}
 	type args struct {
 		email    string
 		password string
 	}
 	tests := []struct {
 		name    string
-		fields  fields
+		repo    Repo
 		args    args
 		want    LoginResponse
 		wantErr bool
 	}{
 		{
 			name: "valid login",
-			fields: fields{
-				repo: func() Repo {
-					mockRepo := NewMockRepo(ctrl)
-					mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(User{
-						Id:       1,
-						Email:    "test@example.com",
-						Password: string(hashedPassword), // bcrypt hash for "password"
-					}, nil)
-					mockRepo.EXPECT().FindProfileByUserID(1).Return(Profile{
-						Username: "testuser",
-						Bio:      "This is a bio",
-						Image:    "http://example.com/image.jpg",
-					}, nil)
-					return mockRepo
-				}(),
-			},
+			repo: func() Repo {
+				mockRepo := NewMockRepo(ctrl)
+				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(User{
+					Id:       1,
+					Email:    "test@example.com",
+					Password: string(hashedPassword), // bcrypt hash for "password"
+				}, nil)
+				mockRepo.EXPECT().FindProfileByUserID(1).Return(Profile{
+					Username: "testuser",
+					Bio:      "This is a bio",
+					Image:    "http://example.com/image.jpg",
+				}, nil)
+				return mockRepo
+			}(),
 			args: args{
 				email:    "test@example.com",
 				password: "password",
@@ -67,13 +62,11 @@ func TestLogic_Login(t *testing.T) {
 		},
 		{
 			name: "anonymous email",
-			fields: fields{
-				repo: func() Repo {
-					mockRepo := NewMockRepo(ctrl)
-					mockRepo.EXPECT().FindUserByEmail("anonymous@example.com").Return(User{}, errors.New("user not found"))
-					return mockRepo
-				}(),
-			},
+			repo: func() Repo {
+				mockRepo := NewMockRepo(ctrl)
+				mockRepo.EXPECT().FindUserByEmail("anonymous@example.com").Return(User{}, errors.New("user not found"))
+				return mockRepo
+			}(),
 			args: args{
 				email:    "anonymous@example.com",
 				password: "password",
@@ -83,17 +76,15 @@ func TestLogic_Login(t *testing.T) {
 		},
 		{
 			name: "password mismatch",
-			fields: fields{
-				repo: func() Repo {
-					mockRepo := NewMockRepo(ctrl)
-					mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(User{
-						Id:       1,
-						Email:    "test@example.com",
-						Password: string(hashedPassword), // bcrypt hash for "password"
-					}, nil)
-					return mockRepo
-				}(),
-			},
+			repo: func() Repo {
+				mockRepo := NewMockRepo(ctrl)
+				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(User{
+					Id:       1,
+					Email:    "test@example.com",
+					Password: string(hashedPassword), // bcrypt hash for "password"
+				}, nil)
+				return mockRepo
+			}(),
 			args: args{
 				email:    "test@example.com",
 				password: "wrongpassword",
@@ -103,18 +94,16 @@ func TestLogic_Login(t *testing.T) {
 		},
 		{
 			name: "profile not found",
-			fields: fields{
-				repo: func() Repo {
-					mockRepo := NewMockRepo(ctrl)
-					mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(User{
-						Id:       1,
-						Email:    "test@example.com",
-						Password: string(hashedPassword),
-					}, nil)
-					mockRepo.EXPECT().FindProfileByUserID(1).Return(Profile{}, errors.New("profile not found"))
-					return mockRepo
-				}(),
-			},
+			repo: func() Repo {
+				mockRepo := NewMockRepo(ctrl)
+				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(User{
+					Id:       1,
+					Email:    "test@example.com",
+					Password: string(hashedPassword),
+				}, nil)
+				mockRepo.EXPECT().FindProfileByUserID(1).Return(Profile{}, errors.New("profile not found"))
+				return mockRepo
+			}(),
 			args: args{
 				email:    "test@example.com",
 				password: "password",
@@ -125,9 +114,7 @@ func TestLogic_Login(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := Logic{
-				repo: tt.fields.repo,
-			}
+			l := Logic{repo: tt.repo}
 			got, err := l.Login(tt.args.email, tt.args.password)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Login() error = %v, wantErr %v", err, tt.wantErr)
