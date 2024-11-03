@@ -29,6 +29,10 @@
 ## Profile
 
 - [ ] Get Profile
+    - [x] Current User Profile (authenticated)
+    - [ ] Other User Profile (authenticated)
+        - [ ] check Followed by current user 
+    - [ ] arbitrary User Profile (unauthenticated)
 - [x] Update User (Profile)
 
 ### Follow
@@ -69,6 +73,8 @@
     - [x] on success (single response)
     - [ ] on success (list response)
     - [x] on error (Error handling)
+- [ ] Input Validation
+- [ ] Package structure
 - [ ] Configuration
 - [x] Database (MySQL)
     - [x] Setup

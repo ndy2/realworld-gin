@@ -7,6 +7,7 @@ import (
 	"ndy/realworld-gin/auth"
 	"ndy/realworld-gin/logger"
 	"ndy/realworld-gin/middleware"
+	"ndy/realworld-gin/profile"
 	"ndy/realworld-gin/user"
 )
 
@@ -43,10 +44,15 @@ func main() {
 	userRepo := user.NewMysqlRepo(db)
 	userLogic := user.NewLogic(userRepo)
 
+	// Profile
+	profileRepo := profile.NewMysqlRepo(db)
+	profileLogic := profile.NewLogic(profileRepo)
+
 	// Middlewares
 	um := middleware.JsonRoot("user", "user")
 	umRespOnly := middleware.JsonRoot("", "user")
 	am := middleware.Auth()
+	pmRespOnly := middleware.JsonRoot("", "profile")
 
 	// Routes
 	r.GET("/ping", func(c *gin.Context) {
@@ -60,6 +66,9 @@ func main() {
 		api.POST("/users", um, user.RegisterHandler(&userLogic))
 		api.GET("/user", am, umRespOnly, user.GetCurrentUserHandler(&userLogic))
 		api.PUT("/user", am, um, user.UpdateUserHandler(&userLogic))
+
+		// profiles
+		api.GET("/profiles/:username", am, pmRespOnly, profile.GetProfileHandler(&profileLogic))
 	}
 
 	// Run the application

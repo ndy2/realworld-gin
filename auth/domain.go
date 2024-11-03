@@ -2,16 +2,16 @@ package auth
 
 type User struct {
 	Id       int
+	Username string
 	Email    string
 	Password string
 }
 
 type Profile struct {
-	Id       int
-	Username string
-	UserID   int
-	Bio      string
-	Image    string
+	Id     int
+	UserID int
+	Bio    string
+	Image  string
 }
 
 type Repo interface {

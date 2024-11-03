@@ -16,7 +16,7 @@ func generate(u User, p Profile) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId":    u.Id,
 		"profileId": p.Id,
-		"username":  p.Username,
+		"username":  u.Username,
 		"exp":       time.Now().Add(jwtExpire).Unix(),
 	})
 

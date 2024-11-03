@@ -60,7 +60,7 @@ func (l LogicImpl) Login(email string, password string) (LoginResponse, error) {
 	return LoginResponse{
 		Email:    user.Email,
 		Token:    token,
-		Username: profile.Username,
+		Username: user.Username,
 		Bio:      profile.Bio,
 		Image:    profile.Image,
 	}, nil

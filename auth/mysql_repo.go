@@ -20,8 +20,8 @@ func NewMysqlRepo(db *sql.DB) *MysqlRepo {
 // FindUserByEmail 는 주어진 사용자가 있는지 확인합니다.
 func (repo *MysqlRepo) FindUserByEmail(email string) (User, error) {
 	var user User
-	query := "SELECT id, email, password FROM users WHERE email = ?"
-	err := repo.db.QueryRow(query, email).Scan(&user.Id, &user.Email, &user.Password)
+	query := "SELECT id, username, email, password FROM users WHERE email = ?"
+	err := repo.db.QueryRow(query, email).Scan(&user.Id, &user.Username, &user.Email, &user.Password)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return User{}, fmt.Errorf("%w: %v", ErrUserNotFound, err)
