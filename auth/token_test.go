@@ -18,8 +18,8 @@ func TestVerify(t *testing.T) {
 		{
 			name: "valid token",
 			token: func() string {
-				u := User{Id: 1, Email: "testuser@email.com"}
-				p := Profile{Id: 1, Username: "testuser"}
+				u := User{Id: 1, Username: "testuser", Email: "testuser@email.com"}
+				p := Profile{Id: 1}
 				token, _ := generate(u, p)
 				return token
 			}(),
@@ -61,8 +61,8 @@ func Test_generate(t *testing.T) {
 	}{
 		{
 			name:    "generate valid token",
-			u:       User{Id: 1, Email: "testuser@email.com"},
-			p:       Profile{Id: 1, Username: "testuser"},
+			u:       User{Id: 1, Username: "testuser", Email: "testuser@email.com"},
+			p:       Profile{Id: 1},
 			wantErr: false,
 		},
 	}
@@ -89,8 +89,8 @@ func Test_generate(t *testing.T) {
 			if claims["profileId"] != float64(tt.p.Id) {
 				t.Errorf("generate() profileId = %v, want %v", claims["profileId"], tt.p.Id)
 			}
-			if claims["username"] != tt.p.Username {
-				t.Errorf("generate() username = %v, want %v", claims["username"], tt.p.Username)
+			if claims["username"] != tt.u.Username {
+				t.Errorf("generate() username = %v, want %v", claims["username"], tt.u.Username)
 			}
 		})
 	}

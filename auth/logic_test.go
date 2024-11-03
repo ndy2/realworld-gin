@@ -36,13 +36,13 @@ func TestLogicImpl_Login(t *testing.T) {
 				mockRepo := NewMockRepo(ctrl)
 				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(User{
 					Id:       1,
+					Username: "testuser",
 					Email:    "test@example.com",
 					Password: string(hashedPassword), // bcrypt hash for "password"
 				}, nil)
 				mockRepo.EXPECT().FindProfileByUserID(1).Return(Profile{
-					Username: "testuser",
-					Bio:      "This is a bio",
-					Image:    "http://example.com/image.jpg",
+					Bio:   "This is a bio",
+					Image: "http://example.com/image.jpg",
 				}, nil)
 				return mockRepo
 			}(),

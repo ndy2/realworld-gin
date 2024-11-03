@@ -12,6 +12,7 @@ func TestMysqlRepo_FindUserByEmail(t *testing.T) {
 	// Mock a User row
 	u1 := User{
 		Id:       1,
+		Username: "user1",
 		Email:    "user1@mail.com",
 		Password: "password",
 	}
@@ -93,6 +94,7 @@ func TestMysqlRepo_FindProfileByUserID(t *testing.T) {
 func (u User) toRow() UserRow {
 	return UserRow{
 		Id:       u.Id,
+		Username: u.Username,
 		Email:    u.Email,
 		Password: u.Password,
 	}

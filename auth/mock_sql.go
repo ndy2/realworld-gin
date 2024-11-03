@@ -17,22 +17,23 @@ func NewMockDB() (*sql.DB, sqlmock.Sqlmock, error) {
 
 type UserRow struct {
 	Id       int
+	Username string
 	Email    string
 	Password string
 }
 
 func MockUserTable(mock sqlmock.Sqlmock, users ...UserRow) {
 	for _, user := range users {
-		rows := sqlmock.NewRows([]string{"id", "email", "password"}).
-			AddRow(user.Id, user.Email, user.Password)
-		mock.ExpectQuery("SELECT id, email, password FROM users WHERE email = ?").
+		rows := sqlmock.NewRows([]string{"id", "username", "email", "password"}).
+			AddRow(user.Id, user.Username, user.Email, user.Password)
+		mock.ExpectQuery("SELECT id, username, email, password FROM users WHERE email = ?").
 			WithArgs(user.Email).
 			WillReturnRows(rows)
 	}
 }
 
 func MockUserTableErrNoRow(mock sqlmock.Sqlmock, email string) {
-	mock.ExpectQuery("SELECT id, email, password FROM users WHERE email = ?").
+	mock.ExpectQuery("SELECT id, username, email, password FROM users WHERE email = ?").
 		WithArgs(email).
 		WillReturnError(sql.ErrNoRows)
 }
