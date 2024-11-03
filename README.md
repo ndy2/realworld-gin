@@ -75,8 +75,8 @@
     - [ ] Connection Pool
     - [ ] ~~Transaction~~ - SKIP FOR NOW
 - [ ] Testing
-    - [ ] Unit Tests Samples (w/ go-mock, go-cmp)
-        - [ ] routes
+    - [x] Unit Tests Samples (w/ go-mock, go-cmp)
+        - [x] routes
         - [x] logic
         - [x] repo (w/ sqlmock)
     - [x] Github Actions - Run tests on push

@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -16,37 +16,33 @@ func TestMysqlRepo_FindUserByEmail(t *testing.T) {
 		Password: "password",
 	}
 	MockUserTable(m, u1.toRow())
+	MockUserTableErrNoRow(m, "no-user@mail.com")
 
 	tests := []struct {
 		name    string
 		email   string
 		want    User
-		wantErr bool
+		wantErr error
 	}{
 		{
 			name:    "user found 1",
 			email:   "user1@mail.com",
 			want:    u1,
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "user not found",
 			email:   "no-user@mail.com",
 			want:    User{},
-			wantErr: true,
+			wantErr: ErrUserNotFound,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &MysqlRepo{db}
 			got, err := repo.FindUserByEmail(tt.email)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("FindUserByEmail() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !cmp.Equal(got, tt.want) {
-				t.Errorf("FindUserByEmail() got = %v, want %v", got, tt.want)
-			}
+			assert.ErrorIs(t, err, tt.wantErr)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -63,37 +59,33 @@ func TestMysqlRepo_FindProfileByUserID(t *testing.T) {
 		Image:  "http://example.com/image.jpg",
 	}
 	MockProfileTable(m, p1.toRow())
+	MockProfileTableErrNoRow(m, 3)
 
 	tests := []struct {
 		name    string
 		userId  int
 		want    Profile
-		wantErr bool
+		wantErr error
 	}{
 		{
 			name:    "profile found 1",
 			userId:  p1.UserID,
 			want:    p1,
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "profile not found",
 			userId:  3,
 			want:    Profile{},
-			wantErr: true,
+			wantErr: ErrProfileNotFound,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &MysqlRepo{db}
 			got, err := repo.FindProfileByUserID(tt.userId)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("FindProfileByUserID() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !cmp.Equal(got, tt.want) {
-				t.Errorf("FindProfileByUserID() got = %v, want %v", got, tt.want)
-			}
+			assert.ErrorIs(t, err, tt.wantErr)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

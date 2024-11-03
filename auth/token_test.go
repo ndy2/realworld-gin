@@ -3,15 +3,10 @@ package auth
 import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/go-cmp/cmp"
-	"ndy/realworld-gin/logger"
 	"strings"
 	"testing"
 	"time"
 )
-
-func init() {
-	logger.InitLogger()
-}
 
 func TestVerify(t *testing.T) {
 	tests := []struct {

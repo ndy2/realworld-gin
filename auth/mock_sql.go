@@ -31,6 +31,12 @@ func MockUserTable(mock sqlmock.Sqlmock, users ...UserRow) {
 	}
 }
 
+func MockUserTableErrNoRow(mock sqlmock.Sqlmock, email string) {
+	mock.ExpectQuery("SELECT id, email, password FROM users WHERE email = ?").
+		WithArgs(email).
+		WillReturnError(sql.ErrNoRows)
+}
+
 type ProfileRow struct {
 	Id     int
 	UserID int
@@ -46,4 +52,10 @@ func MockProfileTable(mock sqlmock.Sqlmock, profiles ...ProfileRow) {
 			WithArgs(profile.UserID).
 			WillReturnRows(rows)
 	}
+}
+
+func MockProfileTableErrNoRow(mock sqlmock.Sqlmock, userID int) {
+	mock.ExpectQuery("SELECT id, user_id, bio, image FROM profiles WHERE user_id = ?").
+		WithArgs(userID).
+		WillReturnError(sql.ErrNoRows)
 }

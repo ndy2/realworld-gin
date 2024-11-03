@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.uber.org/mock/gomock"
@@ -14,7 +13,7 @@ func init() {
 	logger.InitLogger()
 }
 
-func TestLogic_Login(t *testing.T) {
+func TestLogicImpl_Login(t *testing.T) {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 
 	ctrl := gomock.NewController(t)
@@ -61,10 +60,10 @@ func TestLogic_Login(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "anonymous email",
+			name: "user not found",
 			repo: func() Repo {
 				mockRepo := NewMockRepo(ctrl)
-				mockRepo.EXPECT().FindUserByEmail("anonymous@example.com").Return(User{}, errors.New("user not found"))
+				mockRepo.EXPECT().FindUserByEmail("anonymous@example.com").Return(User{}, ErrUserNotFound)
 				return mockRepo
 			}(),
 			args: args{
@@ -101,7 +100,7 @@ func TestLogic_Login(t *testing.T) {
 					Email:    "test@example.com",
 					Password: string(hashedPassword),
 				}, nil)
-				mockRepo.EXPECT().FindProfileByUserID(1).Return(Profile{}, errors.New("profile not found"))
+				mockRepo.EXPECT().FindProfileByUserID(1).Return(Profile{}, ErrProfileNotFound)
 				return mockRepo
 			}(),
 			args: args{
@@ -114,7 +113,7 @@ func TestLogic_Login(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := Logic{repo: tt.repo}
+			l := LogicImpl{repo: tt.repo}
 			got, err := l.Login(tt.args.email, tt.args.password)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Login() error = %v, wantErr %v", err, tt.wantErr)

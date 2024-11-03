@@ -37,13 +37,13 @@ func Verify(token string) (jwt.MapClaims, error) {
 		return []byte(jwtSecret), nil
 	})
 	if err != nil {
-		logger.Log.Error("Failed to parse token", zap.Error(err))
+		logger.Log.Info("Failed to parse token", zap.Error(err))
 		return nil, err
 	}
 
 	// 토큰이 유효한지 검증합니다.
 	if !parsedToken.Valid {
-		logger.Log.Error("Invalid token")
+		logger.Log.Info("Invalid token")
 		return nil, err
 	}
 

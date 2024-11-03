@@ -2,6 +2,8 @@ package auth
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"go.uber.org/zap"
 	"ndy/realworld-gin/logger"
 )
@@ -21,6 +23,9 @@ func (repo *MysqlRepo) FindUserByEmail(email string) (User, error) {
 	query := "SELECT id, email, password FROM users WHERE email = ?"
 	err := repo.db.QueryRow(query, email).Scan(&user.Id, &user.Email, &user.Password)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return User{}, fmt.Errorf("%w: %v", ErrUserNotFound, err)
+		}
 		logger.Log.Error("FindUserByEmail failed", zap.Error(err))
 		return User{}, err
 	}
@@ -33,6 +38,9 @@ func (repo *MysqlRepo) FindProfileByUserID(userID int) (Profile, error) {
 	query := "SELECT id, user_id, bio, image FROM profiles WHERE user_id = ?"
 	err := repo.db.QueryRow(query, userID).Scan(&profile.Id, &profile.UserID, &profile.Bio, &profile.Image)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return Profile{}, fmt.Errorf("%w: %v", ErrProfileNotFound, err)
+		}
 		logger.Log.Error("FindProfileByUserID failed", zap.Error(err))
 		return Profile{}, err
 	}

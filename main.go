@@ -37,7 +37,7 @@ func main() {
 
 	// Auth
 	authRepo := auth.NewMysqlRepo(db)
-	authLogic := auth.NewLogic(authRepo)
+	authLogic := auth.NewLogicImpl(authRepo)
 
 	// User
 	userRepo := user.NewMysqlRepo(db)

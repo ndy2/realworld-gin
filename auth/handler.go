@@ -23,17 +23,17 @@ func AuthenticationHandler(l *Logic) gin.HandlerFunc {
 		logger.Log.Info("Authenticating user", zap.String("email", req.Email))
 
 		// 로그인, 토큰 생성
-		resp, err := l.Login(req.Email, req.Password)
+		resp, err := (*l).Login(req.Email, req.Password)
 
 		// 예외 처리 및 응답 반환
-		if err != nil {
-			logger.Log.Info("Error authenticating user", zap.Error(err))
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		if errors.Is(err, ErrUserNotFound) {
+		if errors.Is(err, ErrUserNotFound) || errors.Is(err, ErrPasswordMismatch) {
 			logger.Log.Info("Error authenticating user", zap.Error(err))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
+			return
+		}
+		if err != nil {
+			logger.Log.Error("Error authenticating user", zap.Error(err))
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		logger.Log.Info("Authenticated user", zap.String("email", req.Email))
