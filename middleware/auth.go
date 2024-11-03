@@ -7,6 +7,21 @@ import (
 	"strings"
 )
 
+func OptionalAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Authorization 헤더로부터 토큰을 추출 (Bearer 토큰)
+		token := strings.Replace(c.GetHeader("Authorization"), "Token ", "", 1)
+		if token == "" {
+			c.Set("Authenticated", false)
+			c.Next()
+			return
+		}
+
+		c.Set("Authenticated", true)
+		Auth()(c)
+	}
+}
+
 // Auth 는 Authorization 헤더로부터 토큰을 추출하고, 토큰을 검증하는 미들웨어를 생성합니다.
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
