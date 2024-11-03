@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"ndy/realworld-gin/logger"
@@ -30,8 +29,8 @@ func (l Logic) Register(
 		return 0, err
 	}
 	if exists {
-		logger.Log.Info("User already exists", zap.String("email", email))
-		return 0, fmt.Errorf("user already exists")
+		logger.Log.Info("Email already registered", zap.String("email", email))
+		return 0, EmailAlreadyRegistered
 	}
 
 	// 비밀번호를 해시화합니다.

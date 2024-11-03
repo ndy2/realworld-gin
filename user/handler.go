@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
 	"go.uber.org/zap"
@@ -22,6 +23,10 @@ func RegisterHandler(l *Logic) gin.HandlerFunc {
 		logger.Log.Info("Registering user", zap.String("email", req.Email), zap.String("username", req.Username))
 
 		_, err := l.Register(req.Username, req.Email, req.Password)
+		if errors.Is(err, EmailAlreadyRegistered) {
+			logger.Log.Info("Email already registered", zap.String("email", req.Email))
+			c.JSON(http.StatusConflict, gin.H{"error": "Email already registered"})
+		}
 		if err != nil {
 			logger.Log.Info("Error registering user", zap.Error(err))
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
