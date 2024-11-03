@@ -1,6 +1,6 @@
 # realworld-gin
 
-![logo](logo.png)
+![logo](resources/logo.png)
 
 ![coverage](https://raw.githubusercontent.com/ndy2/realworld-gin/badges/.badges/main/coverage.svg)
 
