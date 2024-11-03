@@ -3,7 +3,7 @@ package profile
 import (
 	"database/sql"
 	"go.uber.org/zap"
-	"ndy/realworld-gin/logger"
+	"ndy/realworld-gin/internal/util"
 )
 
 type MysqlRepo struct {
@@ -21,7 +21,7 @@ func (repo *MysqlRepo) FindProfile(profileID int) (Profile, error) {
 	query := "SELECT bio, image FROM profiles WHERE id = ?"
 	err := repo.db.QueryRow(query, profileID).Scan(&profile.Bio, &profile.Image)
 	if err != nil {
-		logger.Log.Error("FindProfileByID failed", zap.Error(err))
+		util.Log.Error("FindProfileByID failed", zap.Error(err))
 		return Profile{}, err
 	}
 	return profile, nil

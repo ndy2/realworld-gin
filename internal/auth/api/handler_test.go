@@ -1,34 +1,41 @@
-package auth
+package api
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
+	"ndy/realworld-gin/internal/auth/app"
+	"ndy/realworld-gin/internal/auth/dto"
+	"ndy/realworld-gin/internal/util"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
+
+func init() {
+	util.InitLogger()
+}
 
 func TestAuthenticationHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	gin.SetMode(gin.TestMode)
 	type want struct {
 		status int
-		resp   LoginResponse
+		resp   dto.LoginResponse
 	}
 
 	tests := []struct {
 		name     string
-		l        Logic
+		l        app.Logic
 		rootData json.RawMessage
 		want     want
 	}{
 		{
 			name: "success",
-			l: func() Logic {
-				mockLogic := NewMockLogic(ctrl)
-				mockLogic.EXPECT().Login("test@mail.com", "password").Return(LoginResponse{
+			l: func() app.Logic {
+				mockLogic := app.NewMockLogic(ctrl)
+				mockLogic.EXPECT().Login("test@mail.com", "password").Return(dto.LoginResponse{
 					Email:    "test@mail.com",
 					Token:    "generated_token",
 					Username: "testuser",
@@ -40,7 +47,7 @@ func TestAuthenticationHandler(t *testing.T) {
 			rootData: json.RawMessage(`{"email":"test@mail.com","password":"password"}`),
 			want: want{
 				status: http.StatusOK,
-				resp: LoginResponse{
+				resp: dto.LoginResponse{
 					Email:    "test@mail.com",
 					Token:    "generated_token",
 					Username: "testuser",
@@ -51,25 +58,25 @@ func TestAuthenticationHandler(t *testing.T) {
 		},
 		{
 			name:     "invalid root data",
-			l:        NewMockLogic(ctrl),
+			l:        app.NewMockLogic(ctrl),
 			rootData: json.RawMessage(`{"email":"`),
 			want: want{
 				status: http.StatusBadRequest,
-				resp:   LoginResponse{}, // empty response
+				resp:   dto.LoginResponse{}, // empty response
 			},
 		},
 		{
 			name: "password mismatch",
-			l: func() Logic {
-				mockLogic := NewMockLogic(ctrl)
-				mockLogic.EXPECT().Login("test@mail.com", "wrongpassword").Return(LoginResponse{},
-					ErrPasswordMismatch)
+			l: func() app.Logic {
+				mockLogic := app.NewMockLogic(ctrl)
+				mockLogic.EXPECT().Login("test@mail.com", "wrongpassword").Return(dto.LoginResponse{},
+					app.ErrPasswordMismatch)
 				return mockLogic
 			}(),
 			rootData: json.RawMessage(`{"email":"test@mail.com","password":"wrongpassword"}`),
 			want: want{
 				status: http.StatusUnauthorized,
-				resp:   LoginResponse{}, // empty response
+				resp:   dto.LoginResponse{}, // empty response
 			},
 		},
 	}

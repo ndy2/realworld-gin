@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"ndy/realworld-gin/auth"
+	"ndy/realworld-gin/internal/auth/app"
 	"net/http"
 	"strings"
 )
@@ -34,7 +34,7 @@ func Auth() gin.HandlerFunc {
 		}
 
 		// 추출한 토큰을 검증
-		claims, err := auth.Verify(token)
+		claims, err := app.Verify(token)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()

@@ -1,28 +1,47 @@
-package auth
+package infra
 
 import (
+	"database/sql"
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
+	"ndy/realworld-gin/internal/auth/app"
+	"ndy/realworld-gin/internal/auth/domain"
+	"ndy/realworld-gin/internal/util"
+	"os"
 	"testing"
 )
 
-func TestMysqlRepo_FindUserByEmail(t *testing.T) {
-	db, m, _ := NewMockDB()
+var db *sql.DB
+var mock sqlmock.Sqlmock
+
+func init() {
+	util.InitLogger()
+}
+
+func TestMain(m *testing.M) {
+	db, mock, _ = NewMockDB()
 	defer db.Close()
 
+	code := m.Run()
+
+	os.Exit(code)
+}
+
+func TestMysqlRepo_FindUserByEmail(t *testing.T) {
 	// Mock a User row
-	u1 := User{
+	u1 := domain.User{
 		Id:       1,
 		Username: "user1",
 		Email:    "user1@mail.com",
 		Password: "password",
 	}
-	MockUserTable(m, u1.toRow())
-	MockUserTableErrNoRow(m, "no-user@mail.com")
+	MockUserTable(mock, userRow(u1))
+	MockUserTableErrNoRow(mock, "no-user@mail.com")
 
 	tests := []struct {
 		name    string
 		email   string
-		want    User
+		want    domain.User
 		wantErr error
 	}{
 		{
@@ -34,8 +53,8 @@ func TestMysqlRepo_FindUserByEmail(t *testing.T) {
 		{
 			name:    "user not found",
 			email:   "no-user@mail.com",
-			want:    User{},
-			wantErr: ErrUserNotFound,
+			want:    domain.User{},
+			wantErr: app.ErrUserNotFound,
 		},
 	}
 	for _, tt := range tests {
@@ -49,23 +68,20 @@ func TestMysqlRepo_FindUserByEmail(t *testing.T) {
 }
 
 func TestMysqlRepo_FindProfileByUserID(t *testing.T) {
-	db, m, _ := NewMockDB()
-	defer db.Close()
-
 	// Mock a Profile row
-	p1 := Profile{
+	p1 := domain.Profile{
 		Id:     1,
 		UserID: 1,
 		Bio:    "This is a bio",
 		Image:  "http://example.com/image.jpg",
 	}
-	MockProfileTable(m, p1.toRow())
-	MockProfileTableErrNoRow(m, 3)
+	MockProfileTable(mock, profileRow(p1))
+	MockProfileTableErrNoRow(mock, 3)
 
 	tests := []struct {
 		name    string
 		userId  int
-		want    Profile
+		want    domain.Profile
 		wantErr error
 	}{
 		{
@@ -77,8 +93,8 @@ func TestMysqlRepo_FindProfileByUserID(t *testing.T) {
 		{
 			name:    "profile not found",
 			userId:  3,
-			want:    Profile{},
-			wantErr: ErrProfileNotFound,
+			want:    domain.Profile{},
+			wantErr: app.ErrProfileNotFound,
 		},
 	}
 	for _, tt := range tests {
@@ -91,7 +107,7 @@ func TestMysqlRepo_FindProfileByUserID(t *testing.T) {
 	}
 }
 
-func (u User) toRow() UserRow {
+func userRow(u domain.User) UserRow {
 	return UserRow{
 		Id:       u.Id,
 		Username: u.Username,
@@ -100,7 +116,7 @@ func (u User) toRow() UserRow {
 	}
 }
 
-func (p Profile) toRow() ProfileRow {
+func profileRow(p domain.Profile) ProfileRow {
 	return ProfileRow{
 		Id:     p.Id,
 		UserID: p.UserID,

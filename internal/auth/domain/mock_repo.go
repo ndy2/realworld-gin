@@ -7,7 +7,7 @@
 //
 
 // Package auth is a generated GoMock package.
-package auth
+package domain
 
 import (
 	reflect "reflect"

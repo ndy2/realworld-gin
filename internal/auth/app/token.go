@@ -1,9 +1,10 @@
-package auth
+package app
 
 import (
 	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/zap"
-	"ndy/realworld-gin/logger"
+	"ndy/realworld-gin/internal/auth/domain"
+	"ndy/realworld-gin/internal/util"
 	"time"
 )
 
@@ -11,7 +12,7 @@ const jwtExpire = 72 * time.Hour
 const jwtSecret = "your-256-bit-secret"
 
 // generate 함수는 사용자와 프로필 정보를 이용해 JWT 토큰을 생성합니다.
-func generate(u User, p Profile) (string, error) {
+func generate(u domain.User, p domain.Profile) (string, error) {
 	// 토큰 생성
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId":    u.Id,
@@ -23,7 +24,7 @@ func generate(u User, p Profile) (string, error) {
 	// 토큰을 서명합니다.
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
-		logger.Log.Error("Failed to sign token", zap.Error(err))
+		util.Log.Error("Failed to sign token", zap.Error(err))
 		return "", err
 	}
 
@@ -37,13 +38,13 @@ func Verify(token string) (jwt.MapClaims, error) {
 		return []byte(jwtSecret), nil
 	})
 	if err != nil {
-		logger.Log.Info("Failed to parse token", zap.Error(err))
+		util.Log.Info("Failed to parse token", zap.Error(err))
 		return nil, err
 	}
 
 	// 토큰이 유효한지 검증합니다.
 	if !parsedToken.Valid {
-		logger.Log.Info("Invalid token")
+		util.Log.Info("Invalid token")
 		return nil, err
 	}
 

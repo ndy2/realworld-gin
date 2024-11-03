@@ -1,16 +1,18 @@
-package auth
+package app
 
 import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.uber.org/mock/gomock"
 	"golang.org/x/crypto/bcrypt"
-	"ndy/realworld-gin/logger"
+	"ndy/realworld-gin/internal/auth/domain"
+	"ndy/realworld-gin/internal/auth/dto"
+	"ndy/realworld-gin/internal/util"
 	"testing"
 )
 
 func init() {
-	logger.InitLogger()
+	util.InitLogger()
 }
 
 func TestLogicImpl_Login(t *testing.T) {
@@ -25,22 +27,22 @@ func TestLogicImpl_Login(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		repo    Repo
+		repo    domain.Repo
 		args    args
-		want    LoginResponse
+		want    dto.LoginResponse
 		wantErr bool
 	}{
 		{
 			name: "valid login",
-			repo: func() Repo {
-				mockRepo := NewMockRepo(ctrl)
-				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(User{
+			repo: func() domain.Repo {
+				mockRepo := domain.NewMockRepo(ctrl)
+				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(domain.User{
 					Id:       1,
 					Username: "testuser",
 					Email:    "test@example.com",
 					Password: string(hashedPassword), // bcrypt hash for "password"
 				}, nil)
-				mockRepo.EXPECT().FindProfileByUserID(1).Return(Profile{
+				mockRepo.EXPECT().FindProfileByUserID(1).Return(domain.Profile{
 					Bio:   "This is a bio",
 					Image: "http://example.com/image.jpg",
 				}, nil)
@@ -50,7 +52,7 @@ func TestLogicImpl_Login(t *testing.T) {
 				email:    "test@example.com",
 				password: "password",
 			},
-			want: LoginResponse{
+			want: dto.LoginResponse{
 				Email:    "test@example.com",
 				Token:    "generated_token", // Assuming the generate function returns "generated_token"
 				Username: "testuser",
@@ -61,23 +63,23 @@ func TestLogicImpl_Login(t *testing.T) {
 		},
 		{
 			name: "user not found",
-			repo: func() Repo {
-				mockRepo := NewMockRepo(ctrl)
-				mockRepo.EXPECT().FindUserByEmail("anonymous@example.com").Return(User{}, ErrUserNotFound)
+			repo: func() domain.Repo {
+				mockRepo := domain.NewMockRepo(ctrl)
+				mockRepo.EXPECT().FindUserByEmail("anonymous@example.com").Return(domain.User{}, ErrUserNotFound)
 				return mockRepo
 			}(),
 			args: args{
 				email:    "anonymous@example.com",
 				password: "password",
 			},
-			want:    LoginResponse{},
+			want:    dto.LoginResponse{},
 			wantErr: true,
 		},
 		{
 			name: "password mismatch",
-			repo: func() Repo {
-				mockRepo := NewMockRepo(ctrl)
-				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(User{
+			repo: func() domain.Repo {
+				mockRepo := domain.NewMockRepo(ctrl)
+				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(domain.User{
 					Id:       1,
 					Email:    "test@example.com",
 					Password: string(hashedPassword), // bcrypt hash for "password"
@@ -88,26 +90,26 @@ func TestLogicImpl_Login(t *testing.T) {
 				email:    "test@example.com",
 				password: "wrongpassword",
 			},
-			want:    LoginResponse{},
+			want:    dto.LoginResponse{},
 			wantErr: true,
 		},
 		{
 			name: "profile not found",
-			repo: func() Repo {
-				mockRepo := NewMockRepo(ctrl)
-				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(User{
+			repo: func() domain.Repo {
+				mockRepo := domain.NewMockRepo(ctrl)
+				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(domain.User{
 					Id:       1,
 					Email:    "test@example.com",
 					Password: string(hashedPassword),
 				}, nil)
-				mockRepo.EXPECT().FindProfileByUserID(1).Return(Profile{}, ErrProfileNotFound)
+				mockRepo.EXPECT().FindProfileByUserID(1).Return(domain.Profile{}, ErrProfileNotFound)
 				return mockRepo
 			}(),
 			args: args{
 				email:    "test@example.com",
 				password: "password",
 			},
-			want:    LoginResponse{},
+			want:    dto.LoginResponse{},
 			wantErr: true,
 		},
 	}
@@ -119,7 +121,7 @@ func TestLogicImpl_Login(t *testing.T) {
 				t.Errorf("Login() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !cmp.Equal(got, tt.want, cmpopts.IgnoreFields(LoginResponse{}, "Token")) {
+			if !cmp.Equal(got, tt.want, cmpopts.IgnoreFields(dto.LoginResponse{}, "Token")) {
 				t.Errorf("Login() got = %v, want %v", got, tt.want)
 			}
 		})

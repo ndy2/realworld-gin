@@ -1,4 +1,4 @@
-package auth
+package domain
 
 type User struct {
 	Id       int

@@ -1,8 +1,9 @@
-package auth
+package app
 
 import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/go-cmp/cmp"
+	"ndy/realworld-gin/internal/auth/domain"
 	"strings"
 	"testing"
 	"time"
@@ -18,8 +19,8 @@ func TestVerify(t *testing.T) {
 		{
 			name: "valid token",
 			token: func() string {
-				u := User{Id: 1, Username: "testuser", Email: "testuser@email.com"}
-				p := Profile{Id: 1}
+				u := domain.User{Id: 1, Username: "testuser", Email: "testuser@email.com"}
+				p := domain.Profile{Id: 1}
 				token, _ := generate(u, p)
 				return token
 			}(),
@@ -55,14 +56,14 @@ func TestVerify(t *testing.T) {
 func Test_generate(t *testing.T) {
 	tests := []struct {
 		name    string
-		u       User
-		p       Profile
+		u       domain.User
+		p       domain.Profile
 		wantErr bool
 	}{
 		{
 			name:    "generate valid token",
-			u:       User{Id: 1, Username: "testuser", Email: "testuser@email.com"},
-			p:       Profile{Id: 1},
+			u:       domain.User{Id: 1, Username: "testuser", Email: "testuser@email.com"},
+			p:       domain.Profile{Id: 1},
 			wantErr: false,
 		},
 	}

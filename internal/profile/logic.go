@@ -2,7 +2,7 @@ package profile
 
 import (
 	"go.uber.org/zap"
-	"ndy/realworld-gin/logger"
+	"ndy/realworld-gin/internal/util"
 )
 
 type Logic struct {
@@ -19,7 +19,7 @@ func (l Logic) GetProfile(currentUsername string, profileId int) (GetProfileResp
 	// Get the profile of the given user.
 	profile, err := l.repo.FindProfile(profileId)
 	if err != nil {
-		logger.Log.Error("FindProfile failed", zap.Error(err))
+		util.Log.Error("FindProfile failed", zap.Error(err))
 		return GetProfileResponse{}, err
 	}
 
