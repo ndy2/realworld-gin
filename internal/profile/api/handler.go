@@ -1,13 +1,14 @@
-package profile
+package api
 
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"ndy/realworld-gin/internal/profile/app"
 	"ndy/realworld-gin/internal/util"
 	"net/http"
 )
 
-func GetProfileHandler(l *Logic) gin.HandlerFunc {
+func GetProfileHandler(l *app.Logic) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		currentUsername, _ := c.Get("username")
 		profileId, _ := c.Get("profileId")
@@ -23,13 +24,4 @@ func GetProfileHandler(l *Logic) gin.HandlerFunc {
 		// Return the response
 		c.Set("resp", resp)
 	}
-}
-
-type GetProfileResponse profileResponse
-
-type profileResponse struct {
-	Username  string `json:"username"`
-	Bio       string `json:"bio"`
-	Image     string `json:"image"`
-	Following bool   `json:"following"`
 }

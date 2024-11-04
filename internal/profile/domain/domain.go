@@ -1,4 +1,4 @@
-package profile
+package domain
 
 type Profile struct {
 	Username string

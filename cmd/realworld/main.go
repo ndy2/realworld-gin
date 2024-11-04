@@ -4,14 +4,15 @@ import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
-	auth2 "ndy/realworld-gin/internal/auth/api"
-	"ndy/realworld-gin/internal/auth/app"
-	auth3 "ndy/realworld-gin/internal/auth/infra"
-	middleware2 "ndy/realworld-gin/internal/middleware"
-	profile3 "ndy/realworld-gin/internal/profile"
-	api2 "ndy/realworld-gin/internal/user/api"
-	app2 "ndy/realworld-gin/internal/user/app"
-	user3 "ndy/realworld-gin/internal/user/infra"
+	authapi "ndy/realworld-gin/internal/auth/api"
+	authapp "ndy/realworld-gin/internal/auth/app"
+	authinfra "ndy/realworld-gin/internal/auth/infra"
+	profileapi "ndy/realworld-gin/internal/profile/api"
+	profileapp "ndy/realworld-gin/internal/profile/app"
+	profileinfra "ndy/realworld-gin/internal/profile/infra"
+	userapi "ndy/realworld-gin/internal/user/api"
+	userapp "ndy/realworld-gin/internal/user/app"
+	userinfra "ndy/realworld-gin/internal/user/infra"
 	"ndy/realworld-gin/internal/util"
 )
 
@@ -41,38 +42,23 @@ func main() {
 	}
 
 	// Auth
-	authRepo := auth3.NewMysqlRepo(db)
-	authLogic := app.NewLogicImpl(authRepo)
+	authRepo := authinfra.NewMysqlRepo(db)
+	authLogic := authapp.NewLogicImpl(authRepo)
 
 	// User
-	userRepo := user3.NewMysqlRepo(db)
-	userLogic := app2.NewLogic(userRepo)
+	userRepo := userinfra.NewMysqlRepo(db)
+	userLogic := userapp.NewLogic(userRepo)
 
 	// Profile
-	profileRepo := profile3.NewMysqlRepo(db)
-	profileLogic := profile3.NewLogic(profileRepo)
+	profileRepo := profileinfra.NewMysqlRepo(db)
+	profileLogic := profileapp.NewLogic(profileRepo)
 
-	// Middlewares
-	um := middleware2.JsonRoot("user", "user")
-	umRespOnly := middleware2.JsonRoot("", "user")
-	am := middleware2.Auth()
-	pmRespOnly := middleware2.JsonRoot("", "profile")
-
-	// Routes
-	r.GET("/ping", func(c *gin.Context) {
-		c.String(200, "pong")
-	})
-
+	// Register Api Routes
 	api := r.Group("/api")
 	{
-		// users
-		api.POST("/users/login", um, auth2.AuthenticationHandler(&authLogic))
-		api.POST("/users", um, api2.RegisterHandler(&userLogic))
-		api.GET("/user", am, umRespOnly, api2.GetCurrentUserHandler(&userLogic))
-		api.PUT("/user", am, um, api2.UpdateUserHandler(&userLogic))
-
-		// profiles
-		api.GET("/profiles/:username", am, pmRespOnly, profile3.GetProfileHandler(&profileLogic))
+		authapi.Routes(api, &authLogic)
+		userapi.Routes(api, &userLogic)
+		profileapi.Routes(api, &profileLogic)
 	}
 
 	// Run the app
