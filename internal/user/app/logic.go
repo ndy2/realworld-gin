@@ -1,18 +1,20 @@
-package user
+package app
 
 import (
 	"context"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
+	"ndy/realworld-gin/internal/user/domain"
+	"ndy/realworld-gin/internal/user/dto"
 	"ndy/realworld-gin/internal/util"
 )
 
 type Logic struct {
-	repo Repo
+	repo domain.Repo
 }
 
 // NewLogic 는 새로운 Logic을 생성하고 반환합니다.
-func NewLogic(repo Repo) Logic {
+func NewLogic(repo domain.Repo) Logic {
 	return Logic{repo: repo}
 }
 
@@ -40,7 +42,7 @@ func (l Logic) Register(
 		return 0, err
 	}
 	// 사용자를 등록합니다.
-	id, err := l.repo.InsertUser(User{
+	id, err := l.repo.InsertUser(domain.User{
 		Username: username,
 		Email:    email,
 		Password: string(hashedPassword),
@@ -55,21 +57,21 @@ func (l Logic) Register(
 }
 
 // GetCurrentUser 는 현재 사용자 정보를 반환합니다.
-func (l Logic) GetCurrentUser(userID, profileId int) (GetCurrentUserResponse, error) {
+func (l Logic) GetCurrentUser(userID, profileId int) (dto.GetCurrentUserResponse, error) {
 	// 사용자 정보를 조회합니다.
 	user, err := l.repo.FindUserByID(userID)
 	if err != nil {
-		return GetCurrentUserResponse{}, err
+		return dto.GetCurrentUserResponse{}, err
 	}
 
 	// 프로필 정보를 조회합니다.
 	profile, err := l.repo.FindProfileByID(profileId)
 	if err != nil {
-		return GetCurrentUserResponse{}, err
+		return dto.GetCurrentUserResponse{}, err
 	}
 
 	// 사용자 정보와 프로필 정보를 반환합니다.
-	return GetCurrentUserResponse{
+	return dto.GetCurrentUserResponse{
 		Username: user.Username,
 		Email:    user.Email,
 		Bio:      profile.Bio,
@@ -79,7 +81,7 @@ func (l Logic) GetCurrentUser(userID, profileId int) (GetCurrentUserResponse, er
 }
 
 // UpdateUser 는 사용자 정보를 업데이트합니다.
-func (l Logic) UpdateUser(ctx context.Context, email, username, password, image, bio string) (UpdateUserResponse, error) {
+func (l Logic) UpdateUser(ctx context.Context, email, username, password, image, bio string) (dto.UpdateUserResponse, error) {
 	// 사용자 ID를 context 에서 추출합니다.
 	userId, _ := ctx.Value("userId").(int)
 	profileId, _ := ctx.Value("profileId").(int)
@@ -88,48 +90,48 @@ func (l Logic) UpdateUser(ctx context.Context, email, username, password, image,
 	if password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
-			return UpdateUserResponse{}, err
+			return dto.UpdateUserResponse{}, err
 		}
 		password = string(hashedPassword)
 	}
 
 	// 사용자 정보를 업데이트합니다.
-	err := l.repo.UpdateUser(userId, User{
+	err := l.repo.UpdateUser(userId, domain.User{
 		Username: username,
 		Email:    email,
 		Password: password,
 	})
 	if err != nil {
 		util.Log.Error("UpdateUser failed", zap.Error(err))
-		return UpdateUserResponse{}, err
+		return dto.UpdateUserResponse{}, err
 	}
 
 	// 프로필 정보를 업데이트합니다.
-	err = l.repo.UpdateProfile(profileId, Profile{
+	err = l.repo.UpdateProfile(profileId, domain.Profile{
 		Bio:   bio,
 		Image: image,
 	})
 	if err != nil {
 		util.Log.Error("UpdateProfile failed", zap.Error(err))
-		return UpdateUserResponse{}, err
+		return dto.UpdateUserResponse{}, err
 	}
 
 	// 사용자 정보를 조회합니다.
 	updatedUser, err := l.repo.FindUserByID(userId)
 	if err != nil {
 		util.Log.Error("FindUserByID failed", zap.Error(err))
-		return UpdateUserResponse{}, err
+		return dto.UpdateUserResponse{}, err
 	}
 
 	// 프로필 정보를 조회합니다.
 	updatedProfile, err := l.repo.FindProfileByID(profileId)
 	if err != nil {
 		util.Log.Error("FindProfileByID failed", zap.Error(err))
-		return UpdateUserResponse{}, err
+		return dto.UpdateUserResponse{}, err
 	}
 
 	// 업데이트된 사용자 정보를 반환합니다.
-	return UpdateUserResponse{
+	return dto.UpdateUserResponse{
 		Username: updatedUser.Username,
 		Email:    updatedUser.Email,
 		Bio:      updatedProfile.Bio,

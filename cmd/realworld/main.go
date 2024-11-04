@@ -9,7 +9,9 @@ import (
 	auth3 "ndy/realworld-gin/internal/auth/infra"
 	middleware2 "ndy/realworld-gin/internal/middleware"
 	profile3 "ndy/realworld-gin/internal/profile"
-	user3 "ndy/realworld-gin/internal/user"
+	api2 "ndy/realworld-gin/internal/user/api"
+	app2 "ndy/realworld-gin/internal/user/app"
+	user3 "ndy/realworld-gin/internal/user/infra"
 	"ndy/realworld-gin/internal/util"
 )
 
@@ -44,7 +46,7 @@ func main() {
 
 	// User
 	userRepo := user3.NewMysqlRepo(db)
-	userLogic := user3.NewLogic(userRepo)
+	userLogic := app2.NewLogic(userRepo)
 
 	// Profile
 	profileRepo := profile3.NewMysqlRepo(db)
@@ -65,9 +67,9 @@ func main() {
 	{
 		// users
 		api.POST("/users/login", um, auth2.AuthenticationHandler(&authLogic))
-		api.POST("/users", um, user3.RegisterHandler(&userLogic))
-		api.GET("/user", am, umRespOnly, user3.GetCurrentUserHandler(&userLogic))
-		api.PUT("/user", am, um, user3.UpdateUserHandler(&userLogic))
+		api.POST("/users", um, api2.RegisterHandler(&userLogic))
+		api.GET("/user", am, umRespOnly, api2.GetCurrentUserHandler(&userLogic))
+		api.PUT("/user", am, um, api2.UpdateUserHandler(&userLogic))
 
 		// profiles
 		api.GET("/profiles/:username", am, pmRespOnly, profile3.GetProfileHandler(&profileLogic))
