@@ -90,5 +90,7 @@
     - [x] Github Actions - Run tests on push
         - [x] Unit Tests
         - [ ] Integration Test (w/ newman/docker-compose)
-- [ ] Documentation
+- [ ] Documentation 
+  - [ ] about Project (w/ mkdocs-material)
+  - [ ] ~~about API (w/ Swagger)~~ - SKIP FOR NOW
 - [x] Logging (w/ Zap)
