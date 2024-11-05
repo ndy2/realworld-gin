@@ -4,6 +4,7 @@ import (
 	"context"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/sync/errgroup"
 	"ndy/realworld-gin/internal/user/domain"
 	"ndy/realworld-gin/internal/user/dto"
 	"ndy/realworld-gin/internal/util"
@@ -58,15 +59,33 @@ func (l Logic) Register(
 
 // GetCurrentUser 는 현재 사용자 정보를 반환합니다.
 func (l Logic) GetCurrentUser(userID, profileId int) (dto.GetCurrentUserResponse, error) {
+	var user domain.User
+	var profile domain.Profile
+
+	g, _ := errgroup.WithContext(context.Background())
+
 	// 사용자 정보를 조회합니다.
-	user, err := l.repo.FindUserByID(userID)
-	if err != nil {
-		return dto.GetCurrentUserResponse{}, err
-	}
+	g.Go(func() error {
+		u, err := l.repo.FindUserByID(userID)
+		if err != nil {
+			return err
+		}
+		user = u
+		return nil
+	})
 
 	// 프로필 정보를 조회합니다.
-	profile, err := l.repo.FindProfileByID(profileId)
-	if err != nil {
+	g.Go(func() error {
+		p, err := l.repo.FindProfileByID(profileId)
+		if err != nil {
+			return err
+		}
+		profile = p
+		return nil
+	})
+
+	// 에러가 발생하면 에러를 반환합니다.
+	if err := g.Wait(); err != nil {
 		return dto.GetCurrentUserResponse{}, err
 	}
 

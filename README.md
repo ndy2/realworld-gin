@@ -74,12 +74,14 @@
     - [ ] on success (list response)
     - [x] on error (Error handling)
 - [ ] Input Validation
-- [ ] Package structure
+- [x] Package structure - I'm satisfied with the current structure!
 - [ ] Configuration
-- [x] Database (MySQL)
-    - [x] Setup
-    - [ ] Connection Pool
+- [x] Concurrent Logic with Goroutine (w/ ErrGroup)
+- [ ] Infrastructure (Database) 
+    - [x] Database Setup (w/ MySQL, Docker)
+    - [x] ~~Connection Pool~~ - Go has built-in connection pooling
     - [ ] ~~Transaction~~ - SKIP FOR NOW
+    - [ ] Use SQLX
 - [ ] Testing
     - [x] Unit Tests Samples (w/ go-mock, go-cmp)
         - [x] routes
