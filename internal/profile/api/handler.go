@@ -10,11 +10,20 @@ import (
 
 func GetProfileHandler(l *app.Logic) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		currentUsername, _ := c.Get("username")
-		profileId, _ := c.Get("profileId")
-		util.Log.Info("Getting profile", zap.String("username", currentUsername.(string)), zap.Int("profileId", profileId.(int)))
+		targetUsername := c.Param("username")
+		util.Log.Info("Getting profile", zap.String("username", targetUsername))
 
-		resp, err := l.GetProfile(currentUsername.(string), profileId.(int))
+		// Get the current user if authenticated
+		var currentUserId, currentUserProfileId int
+		var currentUsername string
+		if c.GetBool("Authenticated") {
+			currentUserId = c.GetInt("userId")
+			currentUserProfileId = c.GetInt("profileId")
+			currentUsername = c.GetString("username")
+		}
+
+		// Get the profile
+		resp, err := (*l).GetProfile(currentUserId, currentUserProfileId, currentUsername, targetUsername)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

@@ -26,3 +26,17 @@ func MockProfile(mock sqlmock.Sqlmock, id int, row ProfileRow) {
 		WithArgs(id).
 		WillReturnRows(rows)
 }
+
+func MockProfileWithUserId(mock sqlmock.Sqlmock, username string, targetUserId int, row ProfileRow) {
+	rows := sqlmock.NewRows([]string{"userId", "bio", "image"}).AddRow(targetUserId, row.Bio, row.Image)
+	mock.ExpectQuery("SELECT userId, bio, image FROM profiles WHERE username = ?").
+		WithArgs(username).
+		WillReturnRows(rows)
+}
+
+func MockFollowing(mock sqlmock.Sqlmock, currentUserId, targetUserId int, following bool) {
+	rows := sqlmock.NewRows([]string{"exists)"}).AddRow(following)
+	mock.ExpectQuery("SELECT EXISTS \\(SELECT 1 FROM followers WHERE user_id = \\? AND follower_id = \\?\\)").
+		WithArgs(currentUserId, targetUserId).
+		WillReturnRows(rows)
+}

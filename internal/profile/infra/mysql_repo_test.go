@@ -64,3 +64,46 @@ func TestMysqlRepo_FindProfile(t *testing.T) {
 		})
 	}
 }
+
+func TestMysqlRepo_FindProfileWithFollowingByUsername(t *testing.T) {
+	MockProfileWithUserId(mock, "user2", 2, ProfileRow{
+		Bio:   "bio2",
+		Image: "image2",
+	})
+	MockFollowing(mock, 1, 2, true)
+
+	type args struct {
+		username      string
+		currentUserId int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    domain.Profile
+		want1   domain.Following
+		wantErr bool
+	}{
+		{
+			name: "user following",
+			args: args{
+				username:      "user2",
+				currentUserId: 1,
+			},
+			want: domain.Profile{
+				Bio:   "bio2",
+				Image: "image2",
+			}, // has userId 2
+			want1:   true,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &MysqlRepo{db}
+			got, got1, err := repo.FindProfileWithFollowingByUsername(tt.args.username, tt.args.currentUserId)
+			assert.Equal(t, tt.wantErr, err != nil)
+			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.want1, got1)
+		})
+	}
+}

@@ -51,7 +51,7 @@ func main() {
 
 	// Profile
 	profileRepo := profileinfra.NewMysqlRepo(db)
-	profileLogic := profileapp.NewLogic(profileRepo)
+	profileLogic := profileapp.NewLogicImpl(profileRepo)
 
 	// Register Api Routes
 	api := r.Group("/api")

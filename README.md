@@ -28,11 +28,11 @@
 
 ## Profile
 
-- [ ] Get Profile
+- [x] Get Profile
     - [x] Current User Profile (authenticated)
-    - [ ] Other User Profile (authenticated)
-        - [ ] check Followed by current user 
-    - [ ] arbitrary User Profile (unauthenticated)
+    - [x] Other User Profile (authenticated)
+        - [x] check Followed by current user 
+    - [x] arbitrary User Profile (unauthenticated)
 - [x] Update User (Profile)
 
 ### Follow
@@ -66,9 +66,9 @@
 
 ## Common
 
-- [ ] Authentication
+- [x] Authentication
     - [x] Required
-    - [ ] Optional
+    - [x] Optional
 - [ ] Json Marshal/Unmarshal
     - [x] on success (single response)
     - [ ] on success (list response)
@@ -90,7 +90,18 @@
     - [x] Github Actions - Run tests on push
         - [x] Unit Tests
         - [ ] Integration Test (w/ newman/docker-compose)
-- [ ] Documentation 
+- [ ] ~~Documentation~~ - SKIP FOR NOW
   - [ ] about Project (w/ mkdocs-material)
   - [ ] ~~about API (w/ Swagger)~~ - SKIP FOR NOW
 - [x] Logging (w/ Zap)
+
+## Scripts
+
+### Create go mock for `xxxapp#Logic` interfaces
+
+```bash
+packages=("auth" "profile" "user")
+for pkg in "${packages[@]}"; do
+    mockgen -source=internal/${pkg}/app/logic.go -destination=internal/${pkg}/app/logic_mock.go -package=app
+done
+```
