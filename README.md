@@ -4,7 +4,7 @@
 
 ![coverage](https://raw.githubusercontent.com/ndy2/realworld-gin/badges/.badges/main/coverage.svg)
 
-- 90% of the code is written by [Github Copilot](https://github.com/features/copilot)... I just modified it a bit.
+- 70% of the code is written by [Github Copilot](https://github.com/features/copilot)... I just modified it a bit.
 - see https://realworld-docs.netlify.app/specifications/backend/endpoints/
 
 **Built with**
