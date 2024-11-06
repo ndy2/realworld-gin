@@ -75,7 +75,9 @@
     - [x] on error (Error handling)
 - [ ] Input Validation
 - [x] Package structure - I'm satisfied with the current structure!
-- [ ] Configuration
+- [x] Configuration
+    - [x] internal/config
+    - [ ] ~~more sophisticated configuration~~ - SKIP FOR NOW
 - [x] Concurrent Logic with Goroutine (w/ ErrGroup)
 - [ ] Infrastructure (Database) 
     - [x] Database Setup (w/ MySQL, Docker)

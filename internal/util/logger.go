@@ -3,6 +3,7 @@ package util
 import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"ndy/realworld-gin/internal/config"
 	"os"
 	"time"
 )
@@ -30,7 +31,7 @@ func InitLogger() {
 	core := zapcore.NewCore(
 		zapcore.NewConsoleEncoder(encoderConfig), // 콘솔 출력용 인코더
 		zapcore.AddSync(os.Stdout),               // 출력 대상 설정
-		zap.InfoLevel,                            // 최소 로그 레벨 설정
+		config.ZapConfig.Level,                   // 최소 로그 레벨 설정
 	)
 
 	// 로거 생성

@@ -9,8 +9,8 @@ import (
 func Routes(g *gin.RouterGroup, l *app.Logic) {
 	// middlewares
 	pmRespOnly := middleware.JsonRoot("", "profile")
-	am := middleware.Auth()
+	oam := middleware.OptionalAuth()
 
 	// register routes
-	g.GET("/profiles/:username", am, pmRespOnly, GetProfileHandler(l))
+	g.GET("/profiles/:username", oam, pmRespOnly, GetProfileHandler(l))
 }

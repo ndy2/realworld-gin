@@ -1,9 +1,7 @@
 package main
 
 import (
-	"database/sql"
 	"github.com/gin-gonic/gin"
-	"github.com/go-sql-driver/mysql"
 	authapi "ndy/realworld-gin/internal/auth/api"
 	authapp "ndy/realworld-gin/internal/auth/app"
 	authinfra "ndy/realworld-gin/internal/auth/infra"
@@ -21,25 +19,8 @@ func main() {
 	defer util.Sync()
 
 	util.Log.Info("Application starting...")
-
-	// Create a new Gin app
-	r := gin.Default()
-
-	// Capture connection properties
-	var db *sql.DB
-	cfg := mysql.Config{
-		User:   "root",
-		Passwd: "password",
-		Net:    "tcp",
-		Addr:   "localhost:3306",
-		DBName: "realworld",
-	}
-	// Get a database handle
-	var err error
-	db, err = sql.Open("mysql", cfg.FormatDSN())
-	if err != nil {
-		util.Log.Fatal(err.Error())
-	}
+	// Initialize the database
+	db := util.InitDB()
 
 	// Auth
 	authRepo := authinfra.NewMysqlRepo(db)
@@ -53,6 +34,9 @@ func main() {
 	profileRepo := profileinfra.NewMysqlRepo(db)
 	profileLogic := profileapp.NewLogicImpl(profileRepo)
 
+	// Create a new Gin app
+	r := gin.Default()
+
 	// Register Api Routes
 	api := r.Group("/api")
 	{
@@ -62,9 +46,5 @@ func main() {
 	}
 
 	// Run the app
-	err = r.Run(":8080")
-	if err != nil {
-		util.Log.Fatal(err.Error())
-		return
-	}
+	_ = r.Run(":8080")
 }
