@@ -1,9 +1,8 @@
 package domain
 
 type Profile struct {
-	Username string
-	Bio      string
-	Image    string
+	Bio   string
+	Image string
 }
 
 type Following bool
