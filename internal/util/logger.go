@@ -10,8 +10,8 @@ import (
 
 var Log *zap.Logger
 
-// InitLogger 함수는 로거를 초기화합니다.
-func InitLogger() {
+// init 함수는 로거를 초기화합니다.
+func init() {
 	// 커스텀 인코더 설정
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "timestamp",  // 타임스탬프 키

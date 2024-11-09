@@ -7,15 +7,10 @@ import (
 	"go.uber.org/mock/gomock"
 	"ndy/realworld-gin/internal/auth/app"
 	"ndy/realworld-gin/internal/auth/dto"
-	"ndy/realworld-gin/internal/util"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
-
-func init() {
-	util.InitLogger()
-}
 
 func TestAuthenticationHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)

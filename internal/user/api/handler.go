@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/goccy/go-json"
 	"go.uber.org/zap"
 	"ndy/realworld-gin/internal/user/app"
@@ -22,12 +23,20 @@ func RegisterHandler(l *app.Logic) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user data format"})
 			return
 		}
+
+		if err := binding.Validator.ValidateStruct(req); err != nil {
+			util.Log.Info("Error registering user", zap.Error(err))
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		util.Log.Info("Registering user", zap.String("email", req.Email), zap.String("username", req.Username))
 
 		_, err := l.Register(req.Username, req.Email, req.Password)
 		if errors.Is(err, app.EmailAlreadyRegistered) {
 			util.Log.Info("Email already registered", zap.String("email", req.Email))
 			c.JSON(http.StatusConflict, gin.H{"error": "Email already registered"})
+			return
 		}
 		if err != nil {
 			util.Log.Info("Error registering user", zap.Error(err))
@@ -79,6 +88,13 @@ func UpdateUserHandler(l *app.Logic) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user data format"})
 			return
 		}
+
+		if err := binding.Validator.ValidateStruct(req); err != nil {
+			util.Log.Info("Error updating user", zap.Error(err))
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		util.Log.Info("Updating user", zap.String("email", req.Email), zap.String("username", req.Username))
 
 		// 사용자 ID 획득

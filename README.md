@@ -73,7 +73,7 @@
     - [x] on success (single response)
     - [ ] on success (list response)
     - [x] on error (Error handling)
-- [ ] Input Validation
+- [x] Input Validation
 - [x] Package structure - I'm satisfied with the current structure!
 - [x] Configuration
     - [x] internal/config
@@ -89,7 +89,7 @@
         - [x] routes
         - [x] logic
         - [x] repo (w/ sqlmock)
-    - [x] Github Actions - Run tests on push
+    - [x] GitHub Actions - Run tests on push
         - [x] Unit Tests
         - [ ] Integration Test (w/ newman/docker-compose)
 - [ ] ~~Documentation~~ - SKIP FOR NOW

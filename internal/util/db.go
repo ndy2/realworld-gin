@@ -6,7 +6,9 @@ import (
 	"os"
 )
 
-func InitDB() *sql.DB {
+var DB *sql.DB
+
+func init() {
 	// Capture connection properties
 	var db *sql.DB
 	// Get a database handle
@@ -23,5 +25,5 @@ func InitDB() *sql.DB {
 		os.Exit(1)
 	}
 	// Set the database handle
-	return db
+	DB = db
 }

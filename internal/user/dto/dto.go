@@ -1,20 +1,20 @@
 package dto
 
 type RegistrationRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"username" binding:"username"`
+	Email    string `json:"email" binding:"email"`
+	Password string `json:"password" binding:"password"`
 }
 type RegistrationResponse userResponse
 
 type GetCurrentUserResponse userResponse
 
 type UpdateUserRequest struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Image    string `json:"image"`
-	Bio      string `json:"bio"`
+	Email    string `json:"email" binding:"email"`
+	Username string `json:"username" binding:"username"`
+	Password string `json:"password" binding:"password"`
+	Image    string `json:"image" binding:"image"`
+	Bio      string `json:"bio" binding:"bio"`
 }
 type UpdateUserResponse userResponse
 

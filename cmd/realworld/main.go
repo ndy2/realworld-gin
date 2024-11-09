@@ -15,23 +15,21 @@ import (
 )
 
 func main() {
-	util.InitLogger()
-	defer util.Sync()
-
 	util.Log.Info("Application starting...")
-	db := util.InitDB()
-	util.InitValidators()
+
+	defer util.Sync()
+	defer util.DB.Close()
 
 	// Auth
-	authRepo := authinfra.NewMysqlRepo(db)
+	authRepo := authinfra.NewMysqlRepo(util.DB)
 	authLogic := authapp.NewLogicImpl(authRepo)
 
 	// User
-	userRepo := userinfra.NewMysqlRepo(db)
+	userRepo := userinfra.NewMysqlRepo(util.DB)
 	userLogic := userapp.NewLogic(userRepo)
 
 	// Profile
-	profileRepo := profileinfra.NewMysqlRepo(db)
+	profileRepo := profileinfra.NewMysqlRepo(util.DB)
 	profileLogic := profileapp.NewLogicImpl(profileRepo)
 
 	// Create a new Gin app

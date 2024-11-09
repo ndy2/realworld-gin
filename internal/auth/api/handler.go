@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/goccy/go-json"
 	"go.uber.org/zap"
 	"ndy/realworld-gin/internal/auth/app"
@@ -22,6 +23,13 @@ func AuthenticationHandler(l *app.Logic) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user data format"})
 			return
 		}
+
+		if err := binding.Validator.ValidateStruct(req); err != nil {
+			util.Log.Info("Error authenticating user", zap.Error(err))
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		util.Log.Info("Authenticating user", zap.String("email", req.Email))
 
 		// 로그인, 토큰 생성

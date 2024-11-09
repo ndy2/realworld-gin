@@ -6,12 +6,12 @@ import (
 	"regexp"
 )
 
-func InitValidators() {
+func init() {
 	// Custom validators 등록
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		_ = v.RegisterValidation("username", validateUsername)
 		_ = v.RegisterValidation("email", validateEmail)
 		_ = v.RegisterValidation("password", validatePassword)
-		_ = v.RegisterValidation("username", validateUsername)
 		_ = v.RegisterValidation("image", validateImage)
 		_ = v.RegisterValidation("bio", validateBio)
 	}

@@ -6,17 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"ndy/realworld-gin/internal/auth/app"
 	"ndy/realworld-gin/internal/auth/domain"
-	"ndy/realworld-gin/internal/util"
 	"os"
 	"testing"
 )
 
 var db *sql.DB
 var mock sqlmock.Sqlmock
-
-func init() {
-	util.InitLogger()
-}
 
 func TestMain(m *testing.M) {
 	db, mock, _ = NewMockDB()

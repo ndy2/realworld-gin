@@ -7,13 +7,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"ndy/realworld-gin/internal/auth/domain"
 	"ndy/realworld-gin/internal/auth/dto"
-	"ndy/realworld-gin/internal/util"
 	"testing"
 )
-
-func init() {
-	util.InitLogger()
-}
 
 func TestLogicImpl_Login(t *testing.T) {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
