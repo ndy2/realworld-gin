@@ -5,6 +5,7 @@ import (
 	authapi "ndy/realworld-gin/internal/auth/api"
 	authapp "ndy/realworld-gin/internal/auth/app"
 	authinfra "ndy/realworld-gin/internal/auth/infra"
+	"ndy/realworld-gin/internal/config"
 	profileapi "ndy/realworld-gin/internal/profile/api"
 	profileapp "ndy/realworld-gin/internal/profile/app"
 	profileinfra "ndy/realworld-gin/internal/profile/infra"
@@ -20,16 +21,19 @@ func main() {
 	defer util.Sync()
 	defer util.DB.Close()
 
+	// Config
+	mysqlDsn := config.MysqlConfig.FormatDSN()
+
 	// Auth
-	authRepo := authinfra.NewMysqlRepo(util.DB)
+	authRepo := authinfra.NewMysqlRepo(mysqlDsn)
 	authLogic := authapp.NewLogicImpl(authRepo)
 
 	// User
-	userRepo := userinfra.NewMysqlRepo(util.DB)
+	userRepo := userinfra.NewMysqlRepo(mysqlDsn)
 	userLogic := userapp.NewLogic(userRepo)
 
 	// Profile
-	profileRepo := profileinfra.NewMysqlRepo(util.DB)
+	profileRepo := profileinfra.NewMysqlRepo(mysqlDsn)
 	profileLogic := profileapp.NewLogicImpl(profileRepo)
 
 	// Create a new Gin app

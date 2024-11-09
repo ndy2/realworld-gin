@@ -3,18 +3,25 @@ package infra
 import (
 	"database/sql"
 	"errors"
+	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 	"ndy/realworld-gin/internal/user/domain"
 	"ndy/realworld-gin/internal/util"
+	"os"
 	"time"
 )
 
 type MysqlRepo struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
 // NewMysqlRepo 는 MysqlRepo 를 생성하고 반환합니다.
-func NewMysqlRepo(db *sql.DB) *MysqlRepo {
+func NewMysqlRepo(dsn string) *MysqlRepo {
+	db, err := sqlx.Open("mysql", dsn)
+	if err != nil {
+		util.Log.Fatal("NewMysqlRepo failed", zap.Error(err))
+		os.Exit(1)
+	}
 	return &MysqlRepo{db: db}
 }
 

@@ -4,30 +4,42 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 	"ndy/realworld-gin/internal/auth/app"
 	"ndy/realworld-gin/internal/auth/domain"
 	"ndy/realworld-gin/internal/util"
+	"os"
 )
 
 type MysqlRepo struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
 // NewMysqlRepo 는 MysqlRepo 를 생성하고 반환합니다.
-func NewMysqlRepo(db *sql.DB) *MysqlRepo {
+func NewMysqlRepo(dsn string) *MysqlRepo {
+	db, err := sqlx.Open("mysql", dsn)
+	if err != nil {
+		util.Log.Fatal("NewMysqlRepo failed", zap.Error(err))
+		os.Exit(1)
+	}
 	return &MysqlRepo{db: db}
 }
 
-// FindUserByEmail 는 주어진 사용자가 있는지 확인합니다.
+// FindUserByEmail 는 주어진 이메일로 사용자를 조회합니다.
 func (repo *MysqlRepo) FindUserByEmail(email string) (domain.User, error) {
 	var user domain.User
 	query := "SELECT id, username, email, password FROM users WHERE email = ?"
-	err := repo.db.QueryRow(query, email).Scan(&user.Id, &user.Username, &user.Email, &user.Password)
+
+	// SQLX의 Get을 사용하여 한 번에 데이터를 가져옵니다.
+	err := repo.db.Get(&user, query, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
+			// 사용자 미발견시 에러 처리
 			return domain.User{}, fmt.Errorf("%w: %v", app.ErrUserNotFound, err)
 		}
+		// 에러 로그 출력
 		util.Log.Error("FindUserByEmail failed", zap.Error(err))
 		return domain.User{}, err
 	}

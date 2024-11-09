@@ -1,8 +1,8 @@
 package infra
 
 import (
-	"database/sql"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"ndy/realworld-gin/internal/auth/app"
 	"ndy/realworld-gin/internal/auth/domain"
@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-var db *sql.DB
+var db *sqlx.DB
 var mock sqlmock.Sqlmock
 
 func TestMain(m *testing.M) {

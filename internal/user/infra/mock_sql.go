@@ -1,18 +1,19 @@
 package infra
 
 import (
-	"database/sql"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/jmoiron/sqlx"
 	"log"
 )
 
-func NewMockDB() (*sql.DB, sqlmock.Sqlmock, error) {
+func NewMockDB() (*sqlx.DB, sqlmock.Sqlmock, error) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 		return nil, nil, err
 	}
-	return db, mock, nil
+	sqlxDB := sqlx.NewDb(db, "mysql")
+	return sqlxDB, mock, nil
 }
 
 func MockUserExistsByEmail(mock sqlmock.Sqlmock, email string, exists bool) {

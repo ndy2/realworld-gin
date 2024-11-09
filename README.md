@@ -79,11 +79,11 @@
     - [x] internal/config
     - [ ] ~~more sophisticated configuration~~ - SKIP FOR NOW
 - [x] Concurrent Logic with Goroutine (w/ ErrGroup)
-- [ ] Infrastructure (Database) 
+- [x] Infrastructure (Database) 
     - [x] Database Setup (w/ MySQL, Docker)
     - [x] ~~Connection Pool~~ - Go has built-in connection pooling
     - [ ] ~~Transaction~~ - SKIP FOR NOW
-    - [ ] Use SQLX
+    - [x] Use SQLX
 - [ ] Testing
     - [x] Unit Tests Samples (w/ go-mock, go-cmp)
         - [x] routes
