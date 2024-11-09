@@ -14,7 +14,7 @@ import (
 )
 
 type MysqlRepo struct {
-	db *sqlx.DB
+	DB *sqlx.DB
 }
 
 // NewMysqlRepo 는 MysqlRepo 를 생성하고 반환합니다.
@@ -24,7 +24,7 @@ func NewMysqlRepo(dsn string) *MysqlRepo {
 		util.Log.Fatal("NewMysqlRepo failed", zap.Error(err))
 		os.Exit(1)
 	}
-	return &MysqlRepo{db: db}
+	return &MysqlRepo{DB: db}
 }
 
 // FindUserByEmail 는 주어진 이메일로 사용자를 조회합니다.
@@ -33,7 +33,7 @@ func (repo *MysqlRepo) FindUserByEmail(email string) (domain.User, error) {
 	query := "SELECT id, username, email, password FROM users WHERE email = ?"
 
 	// SQLX의 Get을 사용하여 한 번에 데이터를 가져옵니다.
-	err := repo.db.Get(&user, query, email)
+	err := repo.DB.Get(&user, query, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			// 사용자 미발견시 에러 처리
@@ -50,7 +50,7 @@ func (repo *MysqlRepo) FindUserByEmail(email string) (domain.User, error) {
 func (repo *MysqlRepo) FindProfileByUserID(userID int) (domain.Profile, error) {
 	var profile domain.Profile
 	query := "SELECT id, user_id, bio, image FROM profiles WHERE user_id = ?"
-	err := repo.db.QueryRow(query, userID).Scan(&profile.Id, &profile.UserID, &profile.Bio, &profile.Image)
+	err := repo.DB.QueryRow(query, userID).Scan(&profile.Id, &profile.UserID, &profile.Bio, &profile.Image)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return domain.Profile{}, fmt.Errorf("%w: %v", app.ErrProfileNotFound, err)

@@ -5,7 +5,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"ndy/realworld-gin/internal/user/domain"
-	_ "ndy/realworld-gin/internal/util"
 	"os"
 	"reflect"
 	"testing"
@@ -50,8 +49,8 @@ func TestMysqlRepo_CheckUserExists(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "some db error",
-			args:    args{email: "some db error"},
+			name:    "some DB error",
+			args:    args{email: "some DB error"},
 			want:    false,
 			wantErr: true,
 		},

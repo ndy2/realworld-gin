@@ -18,9 +18,6 @@ import (
 func main() {
 	util.Log.Info("Application starting...")
 
-	defer util.Sync()
-	defer util.DB.Close()
-
 	// Config
 	mysqlDsn := config.MysqlConfig.FormatDSN()
 
@@ -49,4 +46,11 @@ func main() {
 
 	// Run the app
 	_ = r.Run(":8080")
+
+	// Graceful shutdown
+	defer authRepo.DB.Close()
+	defer userRepo.DB.Close()
+	defer profileRepo.DB.Close()
+	defer util.Sync()
+	defer util.Log.Info("Application shutting down...")
 }

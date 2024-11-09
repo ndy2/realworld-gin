@@ -5,7 +5,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"ndy/realworld-gin/internal/profile/domain"
-	_ "ndy/realworld-gin/internal/util"
 	"os"
 	"testing"
 )
