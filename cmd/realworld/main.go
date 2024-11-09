@@ -19,8 +19,8 @@ func main() {
 	defer util.Sync()
 
 	util.Log.Info("Application starting...")
-	// Initialize the database
 	db := util.InitDB()
+	util.InitValidators()
 
 	// Auth
 	authRepo := authinfra.NewMysqlRepo(db)
