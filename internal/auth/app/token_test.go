@@ -4,6 +4,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/go-cmp/cmp"
 	"ndy/realworld-gin/internal/auth/domain"
+	_ "ndy/realworld-gin/internal/util"
 	"strings"
 	"testing"
 	"time"

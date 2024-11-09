@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"ndy/realworld-gin/internal/auth/app"
 	"ndy/realworld-gin/internal/auth/domain"
+	_ "ndy/realworld-gin/internal/util"
 	"os"
 	"testing"
 )
