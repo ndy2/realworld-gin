@@ -6,7 +6,7 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 APIURL=${APIURL:-http://localhost:8080/api}
 USERNAME=${USERNAME:-u`date +%s`}
 EMAIL=${EMAIL:-$USERNAME@mail.com}
-PASSWORD=${PASSWORD:-password}
+PASSWORD=${PASSWORD:-Password1!}
 
 npx newman run $SCRIPTDIR/Conduit.postman_collection.json \
   --delay-request 500 \

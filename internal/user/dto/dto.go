@@ -10,11 +10,11 @@ type RegistrationResponse userResponse
 type GetCurrentUserResponse userResponse
 
 type UpdateUserRequest struct {
-	Email    string `json:"email" binding:"email"`
-	Username string `json:"username" binding:"username"`
-	Password string `json:"password" binding:"password"`
-	Image    string `json:"image" binding:"image"`
-	Bio      string `json:"bio" binding:"bio"`
+	Email    string `json:"email" binding:"omitempty,email"`
+	Username string `json:"username" binding:"omitempty,username"`
+	Password string `json:"password" binding:"omitempty,password"`
+	Image    string `json:"image" binding:"omitempty,image"`
+	Bio      string `json:"bio" binding:"omitempty,bio"`
 }
 type UpdateUserResponse userResponse
 
