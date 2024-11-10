@@ -33,7 +33,7 @@ func (l LogicImpl) GetProfile(currentUserId, currentUserProfileId int, currentUs
 			util.Log.Error("FindProfile failed", zap.Error(err))
 			return dto.GetProfileResponse{}, err
 		}
-	} else if currentUsername != "" {
+	} else if currentUsername == "" {
 		// Unauthenticated user is viewing the profile of another user.
 		profile, err = l.repo.FindProfileByUsername(targetUsername)
 		if err != nil {
@@ -46,7 +46,7 @@ func (l LogicImpl) GetProfile(currentUserId, currentUserProfileId int, currentUs
 	}
 
 	return dto.GetProfileResponse{
-		Username:  currentUsername,
+		Username:  targetUsername,
 		Bio:       profile.Bio,
 		Image:     profile.Image,
 		Following: bool(following),

@@ -61,7 +61,7 @@ func runValidationTests(t *testing.T, tag string, validateFunc validator.Func, t
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := validate.Var(tt.value, tag)
-			assert.Equal(t, tt.valid, err == nil, "unexpected validation result for test case: %s", tt.name)
+			assert.Equal(t, tt.valid, err == nil)
 		})
 	}
 }

@@ -10,17 +10,23 @@ import (
 	"ndy/realworld-gin/internal/util"
 )
 
-type Logic struct {
+type Logic interface {
+	Register(username, email, password string) (int, error)
+	GetCurrentUser(userID, profileId int) (dto.GetCurrentUserResponse, error)
+	UpdateUser(ctx context.Context, email, username, password, image, bio string) (dto.UpdateUserResponse, error)
+}
+
+type LogicImpl struct {
 	repo domain.Repo
 }
 
-// NewLogic 는 새로운 Logic을 생성하고 반환합니다.
-func NewLogic(repo domain.Repo) Logic {
-	return Logic{repo: repo}
+// NewLogicImpl 는 새로운 LogicImpl 을 생성하고 반환합니다.
+func NewLogicImpl(repo domain.Repo) Logic {
+	return LogicImpl{repo: repo}
 }
 
 // Register 는 새로운 사용자를 등록합니다.
-func (l Logic) Register(
+func (l LogicImpl) Register(
 	username string,
 	email string,
 	password string,
@@ -58,7 +64,7 @@ func (l Logic) Register(
 }
 
 // GetCurrentUser 는 현재 사용자 정보를 반환합니다.
-func (l Logic) GetCurrentUser(userID, profileId int) (dto.GetCurrentUserResponse, error) {
+func (l LogicImpl) GetCurrentUser(userID, profileId int) (dto.GetCurrentUserResponse, error) {
 	var user domain.User
 	var profile domain.Profile
 
@@ -100,7 +106,7 @@ func (l Logic) GetCurrentUser(userID, profileId int) (dto.GetCurrentUserResponse
 }
 
 // UpdateUser 는 사용자 정보를 업데이트합니다.
-func (l Logic) UpdateUser(ctx context.Context, email, username, password, image, bio string) (dto.UpdateUserResponse, error) {
+func (l LogicImpl) UpdateUser(ctx context.Context, email, username, password, image, bio string) (dto.UpdateUserResponse, error) {
 	// 사용자 ID를 context 에서 추출합니다.
 	userId, _ := ctx.Value("userId").(int)
 	profileId, _ := ctx.Value("profileId").(int)

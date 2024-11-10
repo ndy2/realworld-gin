@@ -8,3 +8,80 @@
 
 // Package app is a generated GoMock package.
 package app
+
+import (
+	context "context"
+	dto "ndy/realworld-gin/internal/user/dto"
+	reflect "reflect"
+
+	gomock "go.uber.org/mock/gomock"
+)
+
+// MockLogic is a mock of Logic interface.
+type MockLogic struct {
+	ctrl     *gomock.Controller
+	recorder *MockLogicMockRecorder
+	isgomock struct{}
+}
+
+// MockLogicMockRecorder is the mock recorder for MockLogic.
+type MockLogicMockRecorder struct {
+	mock *MockLogic
+}
+
+// NewMockLogic creates a new mock instance.
+func NewMockLogic(ctrl *gomock.Controller) *MockLogic {
+	mock := &MockLogic{ctrl: ctrl}
+	mock.recorder = &MockLogicMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockLogic) EXPECT() *MockLogicMockRecorder {
+	return m.recorder
+}
+
+// GetCurrentUser mocks base method.
+func (m *MockLogic) GetCurrentUser(userID, profileId int) (dto.GetCurrentUserResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCurrentUser", userID, profileId)
+	ret0, _ := ret[0].(dto.GetCurrentUserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCurrentUser indicates an expected call of GetCurrentUser.
+func (mr *MockLogicMockRecorder) GetCurrentUser(userID, profileId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentUser", reflect.TypeOf((*MockLogic)(nil).GetCurrentUser), userID, profileId)
+}
+
+// Register mocks base method.
+func (m *MockLogic) Register(username, email, password string) (int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Register", username, email, password)
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Register indicates an expected call of Register.
+func (mr *MockLogicMockRecorder) Register(username, email, password any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockLogic)(nil).Register), username, email, password)
+}
+
+// UpdateUser mocks base method.
+func (m *MockLogic) UpdateUser(ctx context.Context, email, username, password, image, bio string) (dto.UpdateUserResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUser", ctx, email, username, password, image, bio)
+	ret0, _ := ret[0].(dto.UpdateUserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUser indicates an expected call of UpdateUser.
+func (mr *MockLogicMockRecorder) UpdateUser(ctx, email, username, password, image, bio any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockLogic)(nil).UpdateUser), ctx, email, username, password, image, bio)
+}

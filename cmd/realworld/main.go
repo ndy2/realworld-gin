@@ -27,7 +27,7 @@ func main() {
 
 	// User
 	userRepo := userinfra.NewMysqlRepo(mysqlDsn)
-	userLogic := userapp.NewLogic(userRepo)
+	userLogic := userapp.NewLogicImpl(userRepo)
 
 	// Profile
 	profileRepo := profileinfra.NewMysqlRepo(mysqlDsn)

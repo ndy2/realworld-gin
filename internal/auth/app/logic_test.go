@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"golang.org/x/crypto/bcrypt"
 	"ndy/realworld-gin/internal/auth/domain"
@@ -112,13 +113,8 @@ func TestLogicImpl_Login(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			l := LogicImpl{repo: tt.repo}
 			got, err := l.Login(tt.args.email, tt.args.password)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Login() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !cmp.Equal(got, tt.want, cmpopts.IgnoreFields(dto.LoginResponse{}, "Token")) {
-				t.Errorf("Login() got = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.wantErr, err != nil)
+			assert.True(t, cmp.Equal(got, tt.want, cmpopts.IgnoreFields(dto.LoginResponse{}, "Token")))
 		})
 	}
 }

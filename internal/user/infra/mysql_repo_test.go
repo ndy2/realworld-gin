@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"ndy/realworld-gin/internal/user/domain"
 	"os"
-	"reflect"
 	"testing"
 )
 
@@ -81,40 +80,8 @@ func TestMysqlRepo_FindProfileByID(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &MysqlRepo{db}
 			got, err := repo.FindProfileByID(tt.args.profileID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("FindProfileByID() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("FindProfileByID() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestMysqlRepo_FindUserByID(t *testing.T) {
-	type args struct {
-		userID int
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    domain.User
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			repo := &MysqlRepo{db}
-			got, err := repo.FindUserByID(tt.args.userID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("FindUserByID() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("FindUserByID() got = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.wantErr, err != nil)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -152,20 +119,59 @@ func TestMysqlRepo_InsertUser(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &MysqlRepo{db}
 			got, err := repo.InsertUser(tt.args.u)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("InsertUser() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("InsertUser() got = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.wantErr, err != nil)
+			assert.Equal(t, tt.want, got)
 		})
 		err := mock.ExpectationsWereMet()
 		assert.NoError(t, err)
 	}
 }
 
+func TestMysqlRepo_FindUserByID(t *testing.T) {
+	mock.ExpectQuery("SELECT username, email FROM users WHERE id = ?").
+		WithArgs(1).
+		WillReturnRows(sqlmock.NewRows([]string{"username", "email"}).AddRow("test", "test@mail.com"))
+
+	type args struct {
+		userID int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    domain.User
+		wantErr bool
+	}{
+		{
+			name:    "find user",
+			args:    args{userID: 1},
+			want:    domain.User{Username: "test", Email: "test@mail.com"},
+			wantErr: false,
+		},
+		{
+			name:    "user not found",
+			args:    args{userID: 2},
+			want:    domain.User{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &MysqlRepo{db}
+			got, err := repo.FindUserByID(tt.args.userID)
+			assert.Equal(t, tt.wantErr, err != nil)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestMysqlRepo_UpdateProfile(t *testing.T) {
+	mock.ExpectExec("UPDATE profiles").
+		WithArgs("Updated bio", "Updated bio", "updated_image.jpg", "updated_image.jpg", 1).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec("UPDATE profiles").
+		WithArgs("Updated bio", "Updated bio", "", "", 1).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
 	type args struct {
 		profileId int
 		profile   domain.Profile
@@ -175,14 +181,28 @@ func TestMysqlRepo_UpdateProfile(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "update profile",
+			args: args{profileId: 1, profile: domain.Profile{
+				Bio:   "Updated bio",
+				Image: "updated_image.jpg",
+			}},
+			wantErr: false,
+		},
+		{
+			name: "update profile bio only",
+			args: args{profileId: 1, profile: domain.Profile{
+				Bio:   "Updated bio",
+				Image: "",
+			}},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &MysqlRepo{db}
-			if err := repo.UpdateProfile(tt.args.profileId, tt.args.profile); (err != nil) != tt.wantErr {
-				t.Errorf("UpdateProfile() error = %v, wantErr %v", err, tt.wantErr)
-			}
+			err := repo.UpdateProfile(tt.args.profileId, tt.args.profile)
+			assert.Equal(t, tt.wantErr, err != nil)
 		})
 	}
 }
@@ -202,9 +222,8 @@ func TestMysqlRepo_UpdateUser(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &MysqlRepo{db}
-			if err := repo.UpdateUser(tt.args.userId, tt.args.user); (err != nil) != tt.wantErr {
-				t.Errorf("UpdateUser() error = %v, wantErr %v", err, tt.wantErr)
-			}
+			err := repo.UpdateUser(tt.args.userId, tt.args.user)
+			assert.Equal(t, tt.wantErr, err != nil)
 		})
 	}
 }

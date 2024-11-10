@@ -4,7 +4,7 @@
 
 ![coverage](https://raw.githubusercontent.com/ndy2/realworld-gin/badges/.badges/main/coverage.svg)
 
-- 70% of the code is written by [Github Copilot](https://github.com/features/copilot)... I just modified it a bit.
+- ~~90%~~ ~~70%~~ 60% of the code is written by [Github Copilot](https://github.com/features/copilot)... I just modified it a bit.
 - see https://realworld-docs.netlify.app/specifications/backend/endpoints/
 
 **Built with**
@@ -105,5 +105,6 @@
 packages=("auth" "profile" "user")
 for pkg in "${packages[@]}"; do
     mockgen -source=internal/${pkg}/app/logic.go -destination=internal/${pkg}/app/logic_mock.go -package=app
+    mockgen -source=internal/${pkg}/domain/domain.go -destination=internal/${pkg}/domain/mock_repo.go -package=domain
 done
 ```

@@ -32,7 +32,7 @@ func RegisterHandler(l *app.Logic) gin.HandlerFunc {
 
 		util.Log.Info("Registering user", zap.String("email", req.Email), zap.String("username", req.Username))
 
-		_, err := l.Register(req.Username, req.Email, req.Password)
+		_, err := (*l).Register(req.Username, req.Email, req.Password)
 		if errors.Is(err, app.EmailAlreadyRegistered) {
 			util.Log.Info("Email already registered", zap.String("email", req.Email))
 			c.JSON(http.StatusConflict, gin.H{"error": "Email already registered"})
@@ -64,7 +64,7 @@ func GetCurrentUserHandler(l *app.Logic) gin.HandlerFunc {
 		util.Log.Info("Getting current user", zap.Int("userId", userId.(int)))
 
 		// Get the current user
-		resp, err := l.GetCurrentUser(userId.(int), profileId.(int))
+		resp, err := (*l).GetCurrentUser(userId.(int), profileId.(int))
 		if err != nil {
 			util.Log.Info("Error getting current user", zap.Error(err))
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -104,7 +104,7 @@ func UpdateUserHandler(l *app.Logic) gin.HandlerFunc {
 		ctx = context.WithValue(ctx, "profileId", profileId)
 
 		// 사용자 정보 업데이트
-		resp, err := l.UpdateUser(ctx, req.Email, req.Username, req.Password, req.Image, req.Bio)
+		resp, err := (*l).UpdateUser(ctx, req.Email, req.Username, req.Password, req.Image, req.Bio)
 		if err != nil {
 			util.Log.Info("Error updating user", zap.Error(err))
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
