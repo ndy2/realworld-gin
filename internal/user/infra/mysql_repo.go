@@ -25,11 +25,29 @@ func NewMysqlRepo(dsn string) *MysqlRepo {
 	return &MysqlRepo{DB: db}
 }
 
+type UserRow struct {
+	ID        int       `db:"id"`
+	Username  string    `db:"username"`
+	Email     string    `db:"email"`
+	Password  string    `db:"password"`
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
+}
+
+type ProfileRow struct {
+	ID        int       `db:"id"`
+	UserID    int       `db:"user_id"`
+	Bio       string    `db:"bio"`
+	Image     string    `db:"image"`
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
+}
+
 // CheckUserExists 는 주어진 이메일을 가진 사용자가 있는지 확인합니다.
 func (repo *MysqlRepo) CheckUserExists(email string) (bool, error) {
 	var exists bool
 	query := "SELECT EXISTS (SELECT 1 FROM users WHERE email = ?)"
-	err := repo.DB.QueryRow(query, email).Scan(&exists)
+	err := repo.DB.Get(&exists, query, email)
 	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	}
@@ -42,8 +60,15 @@ func (repo *MysqlRepo) CheckUserExists(email string) (bool, error) {
 
 // InsertUser 는 새로운 사용자를 데이터베이스에 등록하고 새 사용자 ID를 반환합니다.
 func (repo *MysqlRepo) InsertUser(u domain.User) (int, error) {
-	query := "INSERT INTO users (username, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
-	result, err := repo.DB.Exec(query, u.Username, u.Email, u.Password, time.Now(), time.Now())
+	query := `INSERT INTO users (username, email, password, created_at, updated_at) 
+			  VALUES (:username, :email, :password, :created_at, :updated_at)`
+	result, err := repo.DB.NamedExec(query, UserRow{
+		Username:  u.Username,
+		Email:     u.Email,
+		Password:  u.Password,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	})
 	if err != nil {
 		util.Log.Error("InsertUser failed", zap.Error(err))
 		return 0, err
@@ -68,8 +93,17 @@ func (repo *MysqlRepo) InsertUser(u domain.User) (int, error) {
 
 // insertProfile 는 새로운 프로필을 데이터베이스에 등록하고 새 프로필 ID를 반환합니다.
 func (repo *MysqlRepo) insertProfile(userId int) (int, error) {
-	query := "INSERT INTO profiles (user_id, bio, image, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
-	result, err := repo.DB.Exec(query, userId, "", "", time.Now(), time.Now())
+	query := `
+		INSERT INTO profiles (user_id, bio, image, created_at, updated_at) 
+		VALUES (:user_id, :bio, :image, :created_at, :updated_at)
+	`
+	result, err := repo.DB.NamedExec(query, ProfileRow{
+		UserID:    userId,
+		Bio:       "",
+		Image:     "",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	})
 	if err != nil {
 		util.Log.Error("InsertProfile failed", zap.Error(err))
 		return 0, err
