@@ -5,6 +5,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
 	"log"
+	"ndy/realworld-gin/internal/util/table"
 )
 
 func NewMockDB() (*sqlx.DB, sqlmock.Sqlmock, error) {
@@ -17,17 +18,10 @@ func NewMockDB() (*sqlx.DB, sqlmock.Sqlmock, error) {
 	return sqlxDB, mock, nil
 }
 
-type UserRow struct {
-	Id       int
-	Username string
-	Email    string
-	Password string
-}
-
-func MockUserTable(mock sqlmock.Sqlmock, users ...UserRow) {
+func MockUserTable(mock sqlmock.Sqlmock, users ...table.UserRow) {
 	for _, user := range users {
 		rows := sqlmock.NewRows([]string{"id", "username", "email", "password"}).
-			AddRow(user.Id, user.Username, user.Email, user.Password)
+			AddRow(user.ID, user.Username, user.Email, user.Password)
 		mock.ExpectQuery("SELECT id, username, email, password FROM users WHERE email = ?").
 			WithArgs(user.Email).
 			WillReturnRows(rows)
@@ -40,17 +34,10 @@ func MockUserTableErrNoRow(mock sqlmock.Sqlmock, email string) {
 		WillReturnError(sql.ErrNoRows)
 }
 
-type ProfileRow struct {
-	Id     int
-	UserID int
-	Bio    string
-	Image  string
-}
-
-func MockProfileTable(mock sqlmock.Sqlmock, profiles ...ProfileRow) {
+func MockProfileTable(mock sqlmock.Sqlmock, profiles ...table.ProfileRow) {
 	for _, profile := range profiles {
 		rows := sqlmock.NewRows([]string{"id", "user_id", "bio", "image"}).
-			AddRow(profile.Id, profile.UserID, profile.Bio, profile.Image)
+			AddRow(profile.ID, profile.UserID, profile.Bio, profile.Image)
 		mock.ExpectQuery("SELECT id, user_id, bio, image FROM profiles WHERE user_id = ?").
 			WithArgs(profile.UserID).
 			WillReturnRows(rows)

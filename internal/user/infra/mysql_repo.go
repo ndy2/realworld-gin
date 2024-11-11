@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 	"ndy/realworld-gin/internal/user/domain"
 	"ndy/realworld-gin/internal/util"
+	"ndy/realworld-gin/internal/util/table"
 	"os"
 	"time"
 )
@@ -23,24 +24,6 @@ func NewMysqlRepo(dsn string) *MysqlRepo {
 		os.Exit(1)
 	}
 	return &MysqlRepo{DB: db}
-}
-
-type UserRow struct {
-	ID        int       `db:"id"`
-	Username  string    `db:"username"`
-	Email     string    `db:"email"`
-	Password  string    `db:"password"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
-}
-
-type ProfileRow struct {
-	ID        int       `db:"id"`
-	UserID    int       `db:"user_id"`
-	Bio       string    `db:"bio"`
-	Image     string    `db:"image"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
 }
 
 // CheckUserExists 는 주어진 이메일을 가진 사용자가 있는지 확인합니다.
@@ -62,7 +45,7 @@ func (repo *MysqlRepo) CheckUserExists(email string) (bool, error) {
 func (repo *MysqlRepo) InsertUser(u domain.User) (int, error) {
 	query := `INSERT INTO users (username, email, password, created_at, updated_at) 
 			  VALUES (:username, :email, :password, :created_at, :updated_at)`
-	result, err := repo.DB.NamedExec(query, UserRow{
+	result, err := repo.DB.NamedExec(query, table.UserRow{
 		Username:  u.Username,
 		Email:     u.Email,
 		Password:  u.Password,
@@ -97,7 +80,7 @@ func (repo *MysqlRepo) insertProfile(userId int) (int, error) {
 		INSERT INTO profiles (user_id, bio, image, created_at, updated_at) 
 		VALUES (:user_id, :bio, :image, :created_at, :updated_at)
 	`
-	result, err := repo.DB.NamedExec(query, ProfileRow{
+	result, err := repo.DB.NamedExec(query, table.ProfileRow{
 		UserID:    userId,
 		Bio:       "",
 		Image:     "",
@@ -121,26 +104,26 @@ func (repo *MysqlRepo) insertProfile(userId int) (int, error) {
 
 // FindUserByID 는 주어진 사용자 ID에 해당하는 사용자를 반환합니다.
 func (repo *MysqlRepo) FindUserByID(userID int) (domain.User, error) {
-	var user domain.User
+	var row table.UserRow
 	query := "SELECT username, email FROM users WHERE id = ?"
-	err := repo.DB.Get(&user, query, userID)
+	err := repo.DB.Get(&row, query, userID)
 	if err != nil {
 		util.Log.Error("FindUserByID failed", zap.Error(err))
 		return domain.User{}, err
 	}
-	return user, nil
+	return toUser(row), nil
 }
 
 // FindProfileByID 는 주어진 프로필 ID에 해당하는 프로필을 반환합니다.
 func (repo *MysqlRepo) FindProfileByID(profileID int) (domain.Profile, error) {
-	var profile domain.Profile
+	var row table.ProfileRow
 	query := "SELECT bio, image FROM profiles WHERE id = ?"
-	err := repo.DB.Get(&profile, query, profileID)
+	err := repo.DB.Get(&row, query, profileID)
 	if err != nil {
 		util.Log.Error("FindProfileByID failed", zap.Error(err))
 		return domain.Profile{}, err
 	}
-	return profile, nil
+	return toProfile(row), nil
 }
 
 // UpdateUser 는 주어진 사용자 ID에 해당하는 사용자 정보를 업데이트합니다.
@@ -148,12 +131,17 @@ func (repo *MysqlRepo) UpdateUser(userId int, user domain.User) error {
 	query := `
     UPDATE users
     SET 
-        username = IF(? <> '', ?, username),
-        email = IF(? <> '', ?, email),
-        password = IF(? <> '', ?, password)
-    WHERE id = ?;`
+        username = IF(:username <> '', :username, username),
+        email = IF(:email <> '', :email, email),
+        password = IF(:password <> '', :password, password)
+    WHERE id = :id;`
 
-	_, err := repo.DB.Exec(query, user.Username, user.Username, user.Email, user.Email, user.Password, user.Password, userId)
+	_, err := repo.DB.NamedExec(query, table.UserRow{
+		ID:       userId,
+		Username: user.Username,
+		Email:    user.Email,
+		Password: user.Password,
+	})
 	if err != nil {
 		util.Log.Error("UpdateUser failed", zap.Error(err))
 		return err
@@ -166,10 +154,15 @@ func (repo *MysqlRepo) UpdateProfile(profileId int, profile domain.Profile) erro
 	query := `
     UPDATE profiles
     SET 
-        bio = IF(? <> '', ?, bio),
-        image = IF(? <> '', ?, image)
-    WHERE id = ?;`
-	_, err := repo.DB.Exec(query, profile.Bio, profile.Bio, profile.Image, profile.Image, profileId)
+        bio = IF(:bio <> '', :bio, bio),
+        image = IF(:image <> '', :image, image)
+    WHERE id = :id;`
+
+	_, err := repo.DB.NamedExec(query, table.ProfileRow{
+		ID:    profileId,
+		Bio:   profile.Bio,
+		Image: profile.Image,
+	})
 	if err != nil {
 		util.Log.Error("UpdateProfile failed", zap.Error(err))
 		return err

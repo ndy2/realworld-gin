@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"ndy/realworld-gin/internal/auth/app"
 	"ndy/realworld-gin/internal/auth/domain"
+	"ndy/realworld-gin/internal/util/table"
 	"os"
 	"testing"
 )
@@ -24,13 +25,13 @@ func TestMain(m *testing.M) {
 
 func TestMysqlRepo_FindUserByEmail(t *testing.T) {
 	// Mock a User row
-	u1 := domain.User{
-		Id:       1,
+	ur := table.UserRow{
+		ID:       1,
 		Username: "user1",
 		Email:    "user1@mail.com",
 		Password: "password",
 	}
-	MockUserTable(mock, userRow(u1))
+	MockUserTable(mock, ur)
 	MockUserTableErrNoRow(mock, "no-user@mail.com")
 
 	tests := []struct {
@@ -42,7 +43,7 @@ func TestMysqlRepo_FindUserByEmail(t *testing.T) {
 		{
 			name:    "user found 1",
 			email:   "user1@mail.com",
-			want:    u1,
+			want:    toUser(ur),
 			wantErr: nil,
 		},
 		{
@@ -64,13 +65,13 @@ func TestMysqlRepo_FindUserByEmail(t *testing.T) {
 
 func TestMysqlRepo_FindProfileByUserID(t *testing.T) {
 	// Mock a Profile row
-	p1 := domain.Profile{
-		Id:     1,
+	pr := table.ProfileRow{
+		ID:     1,
 		UserID: 1,
 		Bio:    "This is a bio",
 		Image:  "http://example.com/image.jpg",
 	}
-	MockProfileTable(mock, profileRow(p1))
+	MockProfileTable(mock, pr)
 	MockProfileTableErrNoRow(mock, 3)
 
 	tests := []struct {
@@ -81,8 +82,8 @@ func TestMysqlRepo_FindProfileByUserID(t *testing.T) {
 	}{
 		{
 			name:    "profile found 1",
-			userId:  p1.UserID,
-			want:    p1,
+			userId:  pr.UserID,
+			want:    toProfile(pr),
 			wantErr: nil,
 		},
 		{
@@ -99,23 +100,5 @@ func TestMysqlRepo_FindProfileByUserID(t *testing.T) {
 			assert.ErrorIs(t, err, tt.wantErr)
 			assert.Equal(t, tt.want, got)
 		})
-	}
-}
-
-func userRow(u domain.User) UserRow {
-	return UserRow{
-		Id:       u.Id,
-		Username: u.Username,
-		Email:    u.Email,
-		Password: u.Password,
-	}
-}
-
-func profileRow(p domain.Profile) ProfileRow {
-	return ProfileRow{
-		Id:     p.Id,
-		UserID: p.UserID,
-		Bio:    p.Bio,
-		Image:  p.Image,
 	}
 }

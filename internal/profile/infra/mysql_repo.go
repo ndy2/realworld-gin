@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"ndy/realworld-gin/internal/profile/domain"
 	"ndy/realworld-gin/internal/util"
+	"ndy/realworld-gin/internal/util/table"
 	"os"
 )
 
@@ -24,26 +25,26 @@ func NewMysqlRepo(dsn string) *MysqlRepo {
 
 // FindProfile 는 주어진 사용자 ID에 해당하는 프로필을 반환합니다.
 func (repo *MysqlRepo) FindProfile(profileID int) (domain.Profile, error) {
-	var profile domain.Profile
+	var row table.ProfileRow
 	query := "SELECT bio, image FROM profiles WHERE id = ?"
-	err := repo.DB.QueryRow(query, profileID).Scan(&profile.Bio, &profile.Image)
+	err := repo.DB.Get(&row, query, profileID)
 	if err != nil {
 		util.Log.Error("FindProfileByID failed", zap.Error(err))
 		return domain.Profile{}, err
 	}
-	return profile, nil
+	return toProfile(row), nil
 }
 
 // FindProfileByUsername 는 주어진 사용자 이름에 해당하는 프로필을 반환합니다.
 func (repo *MysqlRepo) FindProfileByUsername(username string) (domain.Profile, error) {
-	var profile domain.Profile
+	var row table.ProfileRow
 	query := "SELECT bio, image FROM profiles WHERE username = ?"
-	err := repo.DB.QueryRow(query, username).Scan(&profile.Bio, &profile.Image)
+	err := repo.DB.Get(&row, query, username)
 	if err != nil {
 		util.Log.Error("FindProfileByUsername failed", zap.Error(err))
 		return domain.Profile{}, err
 	}
-	return profile, nil
+	return toProfile(row), nil
 }
 
 // FindProfileWithFollowingByUsername 는 주어진 사용자 이름에 해당하는 프로필과 팔로잉 여부를 반환합니다.

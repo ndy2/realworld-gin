@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"ndy/realworld-gin/internal/profile/domain"
+	"ndy/realworld-gin/internal/util/table"
 	"os"
 	"testing"
 )
@@ -23,10 +24,11 @@ func TestMain(m *testing.M) {
 
 func TestMysqlRepo_FindProfile(t *testing.T) {
 	// Mock a Profile Exists Query
-	MockProfile(mock, 1, ProfileRow{
+	row := table.ProfileRow{
 		Bio:   "bio1",
 		Image: "image1",
-	})
+	}
+	MockProfile(mock, 1, row)
 
 	tests := []struct {
 		name      string
@@ -37,11 +39,8 @@ func TestMysqlRepo_FindProfile(t *testing.T) {
 		{
 			name:      "profile exists",
 			profileID: 1,
-			want: domain.Profile{
-				Bio:   "bio1",
-				Image: "image1",
-			},
-			wantErr: false,
+			want:      toProfile(row),
+			wantErr:   false,
 		},
 		{
 			name:      "profile not exists",
@@ -61,10 +60,11 @@ func TestMysqlRepo_FindProfile(t *testing.T) {
 }
 
 func TestMysqlRepo_FindProfileWithFollowingByUsername(t *testing.T) {
-	MockProfileWithUserId(mock, "user2", 2, ProfileRow{
+	row := table.ProfileRow{
 		Bio:   "bio2",
 		Image: "image2",
-	})
+	}
+	MockProfileWithUserId(mock, "user2", 2, row)
 	MockFollowing(mock, 1, 2, true)
 
 	type args struct {
@@ -84,10 +84,7 @@ func TestMysqlRepo_FindProfileWithFollowingByUsername(t *testing.T) {
 				username:      "user2",
 				currentUserId: 1,
 			},
-			want: domain.Profile{
-				Bio:   "bio2",
-				Image: "image2",
-			}, // has userId 2
+			want:    toProfile(row),
 			want1:   true,
 			wantErr: false,
 		},

@@ -1,5 +1,7 @@
 package domain
 
+// TODO - Introduce UserProfile type
+
 type User struct {
 	Username string
 	Email    string

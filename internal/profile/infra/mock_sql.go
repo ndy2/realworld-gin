@@ -4,6 +4,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
 	"log"
+	"ndy/realworld-gin/internal/util/table"
 )
 
 func NewMockDB() (*sqlx.DB, sqlmock.Sqlmock, error) {
@@ -16,19 +17,14 @@ func NewMockDB() (*sqlx.DB, sqlmock.Sqlmock, error) {
 	return sqlxDB, mock, nil
 }
 
-type ProfileRow struct {
-	Bio   string
-	Image string
-}
-
-func MockProfile(mock sqlmock.Sqlmock, id int, row ProfileRow) {
+func MockProfile(mock sqlmock.Sqlmock, id int, row table.ProfileRow) {
 	rows := sqlmock.NewRows([]string{"bio", "image"}).AddRow(row.Bio, row.Image)
 	mock.ExpectQuery("SELECT bio, image FROM profiles WHERE id = ?").
 		WithArgs(id).
 		WillReturnRows(rows)
 }
 
-func MockProfileWithUserId(mock sqlmock.Sqlmock, username string, targetUserId int, row ProfileRow) {
+func MockProfileWithUserId(mock sqlmock.Sqlmock, username string, targetUserId int, row table.ProfileRow) {
 	rows := sqlmock.NewRows([]string{"userId", "bio", "image"}).AddRow(targetUserId, row.Bio, row.Image)
 	mock.ExpectQuery("SELECT userId, bio, image FROM profiles WHERE username = ?").
 		WithArgs(username).

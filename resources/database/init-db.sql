@@ -24,6 +24,5 @@ CREATE TABLE IF NOT EXISTS followers (
     id          INT          AUTO_INCREMENT PRIMARY KEY,
     user_id     INT          NOT NULL,
     follower_id INT          NOT NULL,
-    created_at  TIMESTAMP    NOT NULL,
-    updated_at  TIMESTAMP    NOT NULL
+    created_at  TIMESTAMP    NOT NULL
 );
