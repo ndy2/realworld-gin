@@ -4,7 +4,8 @@
 
 ![coverage](https://raw.githubusercontent.com/ndy2/realworld-gin/badges/.badges/main/coverage.svg)
 
-- ~~90%~~ ~~70%~~ 60% of the code is written by [Github Copilot](https://github.com/features/copilot)... I just modified it a bit.
+- ~~90%~~ ~~70%~~ 60% of the code is written by [Github Copilot](https://github.com/features/copilot)... I just modified
+  it a bit.
 - see https://realworld-docs.netlify.app/specifications/backend/endpoints/
 
 **Built with**
@@ -31,7 +32,7 @@
 - [x] Get Profile
     - [x] Current User Profile (authenticated)
     - [x] Other User Profile (authenticated)
-        - [x] check Followed by current user 
+        - [x] check Followed by current user
     - [x] arbitrary User Profile (unauthenticated)
 - [x] Update User (Profile)
 
@@ -79,13 +80,14 @@
     - [x] internal/config
     - [ ] ~~more sophisticated configuration~~ - SKIP FOR NOW
 - [x] Concurrent Logic with Goroutine (w/ ErrGroup)
-- [x] Infrastructure (Database) 
+- [x] Infrastructure (Database)
     - [x] Database Setup (w/ MySQL, Docker)
     - [x] ~~Connection Pool~~ - Go has built-in connection pooling
     - [ ] ~~Transaction~~ - SKIP FOR NOW
     - [x] Use SQLX
 - [ ] Testing
     - [x] Unit Tests Samples (w/ go-mock, go-cmp)
+        - [ ] middleware
         - [x] route (w/ httptest)
         - [x] handler
         - [x] logic
@@ -94,11 +96,43 @@
         - [x] Unit Tests
         - [ ] Integration Test (w/ newman/docker-compose)
 - [ ] ~~Documentation~~ - SKIP FOR NOW
-  - [ ] about Project (w/ mkdocs-material)
-  - [ ] ~~about API (w/ Swagger)~~ - SKIP FOR NOW
+    - [ ] about Project (w/ mkdocs-material)
+    - [ ] ~~about API (w/ Swagger)~~ - SKIP FOR NOW
 - [x] Logging (w/ Zap)
 
 ## Scripts
+
+### Run the app
+
+```bash
+go run cmd/realworld/main.go
+```
+
+### Run tests
+
+run all tests
+
+```bash
+go test ./...
+```
+
+create coverage report
+
+```bash
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out
+```
+
+### Run Integration Tests
+
+```bash
+# start the database 
+cd resources/database && docker-compose up -d 
+sleep 10 # wait for the database to be ready
+
+# run the tests
+cd ../postman && ./run-api-tests.sh
+```
 
 ### Create go mock for `xxxapp#Logic` interfaces
 
