@@ -86,7 +86,8 @@
     - [x] Use SQLX
 - [ ] Testing
     - [x] Unit Tests Samples (w/ go-mock, go-cmp)
-        - [x] routes
+        - [x] route (w/ httptest)
+        - [x] handler
         - [x] logic
         - [x] repo (w/ sqlmock)
     - [x] GitHub Actions - Run tests on push
