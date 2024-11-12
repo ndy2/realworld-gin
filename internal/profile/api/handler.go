@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"ndy/realworld-gin/internal/profile/app"
@@ -24,6 +25,14 @@ func GetProfileHandler(l *app.Logic) gin.HandlerFunc {
 
 		// Get the profile
 		resp, err := (*l).GetProfile(currentUserId, currentUserProfileId, currentUsername, targetUsername)
+
+		// Profile not found
+		if errors.Is(err, app.ErrProfileNotFound) {
+			util.Log.Info("Profile not found", zap.String("username", targetUsername))
+			c.JSON(http.StatusNotFound, gin.H{"error": "Profile not found"})
+			return
+		}
+		// Other errors
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

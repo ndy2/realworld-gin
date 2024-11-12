@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"go.uber.org/zap"
 	"ndy/realworld-gin/internal/profile/domain"
 	"ndy/realworld-gin/internal/profile/dto"
@@ -32,6 +33,10 @@ func (l LogicImpl) GetProfile(currentUserId, currentUserProfileId int, currentUs
 	} else if currentUsername == "" {
 		// Unauthenticated user is viewing the profile of another user.
 		profile, err = l.repo.FindProfileByUsername(targetUsername)
+		if errors.Is(err, ErrProfileNotFound) {
+			util.Log.Info("Profile not found", zap.String("username", targetUsername))
+			return dto.GetProfileResponse{}, err
+		}
 		if err != nil {
 			util.Log.Error("FindProfileByUsername failed", zap.Error(err))
 			return dto.GetProfileResponse{}, err
