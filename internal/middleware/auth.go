@@ -12,7 +12,7 @@ func OptionalAuth() gin.HandlerFunc {
 		// Authorization 헤더로부터 토큰을 추출 (Bearer 토큰)
 		token := strings.Replace(c.GetHeader("Authorization"), "Token ", "", 1)
 		if token == "" {
-			c.Set("Authenticated", false)
+			c.Set("authenticated", false)
 			c.Next()
 			return
 		}

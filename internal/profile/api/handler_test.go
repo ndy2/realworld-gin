@@ -110,7 +110,7 @@ func TestGetProfileHandler(t *testing.T) {
 			c, _ := gin.CreateTestContext(w)
 
 			c.AddParam("username", "targetuser")
-			c.Set("Authenticated", tt.args.authenticated)
+			c.Set("authenticated", tt.args.authenticated)
 			c.Set("userId", tt.args.userId)
 			c.Set("profileId", tt.args.profileId)
 			c.Set("username", "testuser")
