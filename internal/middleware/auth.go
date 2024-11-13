@@ -17,7 +17,7 @@ func OptionalAuth() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("Authenticated", true)
+		c.Set("authenticated", true)
 		Auth()(c)
 	}
 }

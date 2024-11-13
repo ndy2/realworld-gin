@@ -3,7 +3,6 @@ package app
 import (
 	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/zap"
-	"ndy/realworld-gin/internal/auth/domain"
 	"ndy/realworld-gin/internal/util"
 	"time"
 )
@@ -11,13 +10,13 @@ import (
 const jwtExpire = 72 * time.Hour
 const jwtSecret = "your-256-bit-secret"
 
-// generate 함수는 사용자와 프로필 정보를 이용해 JWT 토큰을 생성합니다.
-func generate(u domain.User, p domain.Profile) (string, error) {
+// Generate 함수는 사용자와 프로필 정보를 이용해 JWT 토큰을 생성합니다.
+func Generate(userId, profileId int, username string) (string, error) {
 	// 토큰 생성
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId":    u.Id,
-		"profileId": p.Id,
-		"username":  u.Username,
+		"userId":    userId,
+		"profileId": profileId,
+		"username":  username,
 		"exp":       time.Now().Add(jwtExpire).Unix(),
 	})
 

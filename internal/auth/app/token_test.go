@@ -3,7 +3,6 @@ package app
 import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/go-cmp/cmp"
-	"ndy/realworld-gin/internal/auth/domain"
 	"strings"
 	"testing"
 	"time"
@@ -19,9 +18,7 @@ func TestVerify(t *testing.T) {
 		{
 			name: "valid token",
 			token: func() string {
-				u := domain.User{Id: 1, Username: "testuser", Email: "testuser@email.com"}
-				p := domain.Profile{Id: 1}
-				token, _ := generate(u, p)
+				token, _ := Generate(1, 1, "testuser")
 				return token
 			}(),
 			want: jwt.MapClaims{
@@ -53,45 +50,47 @@ func TestVerify(t *testing.T) {
 	}
 }
 
-func Test_generate(t *testing.T) {
+func Test_Generate(t *testing.T) {
 	tests := []struct {
-		name    string
-		u       domain.User
-		p       domain.Profile
-		wantErr bool
+		name      string
+		userId    int
+		profileId int
+		username  string
+		wantErr   bool
 	}{
 		{
-			name:    "generate valid token",
-			u:       domain.User{Id: 1, Username: "testuser", Email: "testuser@email.com"},
-			p:       domain.Profile{Id: 1},
-			wantErr: false,
+			name:      "Generate valid token",
+			userId:    1,
+			profileId: 1,
+			username:  "testuser",
+			wantErr:   false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := generate(tt.u, tt.p)
+			got, err := Generate(tt.userId, tt.profileId, tt.username)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("generate() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Generate() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if strings.Count(got, ".") != 2 {
-				t.Errorf("generate() failed to generate token")
+				t.Errorf("Generate() failed to Generate token")
 				return
 			}
 
 			claims, err := Verify(got)
 			if err != nil {
-				t.Errorf("generate() failed to verify token = %v", err)
+				t.Errorf("Generate() failed to verify token = %v", err)
 				return
 			}
-			if claims["userId"] != float64(tt.u.Id) {
-				t.Errorf("generate() userId = %v, want %v", claims["userId"], tt.u.Id)
+			if claims["userId"] != float64(tt.userId) {
+				t.Errorf("Generate() userId = %v, want %v", claims["userId"], tt.userId)
 			}
-			if claims["profileId"] != float64(tt.p.Id) {
-				t.Errorf("generate() profileId = %v, want %v", claims["profileId"], tt.p.Id)
+			if claims["profileId"] != float64(tt.profileId) {
+				t.Errorf("Generate() profileId = %v, want %v", claims["profileId"], tt.profileId)
 			}
-			if claims["username"] != tt.u.Username {
-				t.Errorf("generate() username = %v, want %v", claims["username"], tt.u.Username)
+			if claims["username"] != tt.username {
+				t.Errorf("Generate() username = %v, want %v", claims["username"], tt.username)
 			}
 		})
 	}

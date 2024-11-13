@@ -48,9 +48,9 @@ func (l LogicImpl) Login(email string, password string) (dto.LoginResponse, erro
 	}
 
 	// 토큰을 생성합니다.
-	token, err := generate(user, profile)
+	token, err := Generate(user.Id, profile.Id, user.Username)
 	if err != nil {
-		util.Log.Error("generate failed", zap.Error(err))
+		util.Log.Error("Generate failed", zap.Error(err))
 		return dto.LoginResponse{}, err
 	}
 

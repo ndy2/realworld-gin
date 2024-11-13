@@ -50,7 +50,7 @@ func TestLogicImpl_Login(t *testing.T) {
 			},
 			want: dto.LoginResponse{
 				Email:    "test@example.com",
-				Token:    "generated_token", // Assuming the generate function returns "generated_token"
+				Token:    "generated_token", // Assuming the Generate function returns "generated_token"
 				Username: "testuser",
 				Bio:      "This is a bio",
 				Image:    "http://example.com/image.jpg",

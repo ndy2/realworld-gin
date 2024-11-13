@@ -17,6 +17,7 @@ func GetProfileHandler(l *app.Logic) gin.HandlerFunc {
 		// Get the current user if authenticated
 		var currentUserId, currentUserProfileId int
 		var currentUsername string
+
 		if c.GetBool("authenticated") {
 			currentUserId = c.GetInt("userId")
 			currentUserProfileId = c.GetInt("profileId")

@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
+	authapp "ndy/realworld-gin/internal/auth/app"
 	"ndy/realworld-gin/internal/profile/app"
 	"ndy/realworld-gin/internal/profile/dto"
 	"net/http"
@@ -21,14 +23,6 @@ var mockLogic *app.MockLogic
 
 func TestMain(m *testing.M) {
 	gin.SetMode(gin.TestMode)
-	r = gin.New()
-	g = r.Group("/api")
-	w = httptest.NewRecorder()
-	ctx, _ = gin.CreateTestContext(w)
-
-	ctrl := gomock.NewController(nil)
-	defer ctrl.Finish()
-	mockLogic = app.NewMockLogic(ctrl)
 
 	code := m.Run()
 
@@ -36,6 +30,14 @@ func TestMain(m *testing.M) {
 }
 
 func TestRoutes_Profiles_Username_Success_Authenticated(t *testing.T) {
+	r = gin.New()
+	g = r.Group("/api")
+	w = httptest.NewRecorder()
+	ctx, _ = gin.CreateTestContext(w)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockLogic = app.NewMockLogic(ctrl)
+
 	// Given
 	resp := dto.GetProfileResponse{
 		Username:  "testuser",
@@ -53,11 +55,8 @@ func TestRoutes_Profiles_Username_Success_Authenticated(t *testing.T) {
 		"/api/profiles/targetuser",
 		nil,
 	)
-	ctx.Request = httpReq
-	ctx.Set("authenticated", true)
-	ctx.Set("userId", 1)
-	ctx.Set("profileId", 1)
-	ctx.Set("username", "testuser")
+	testToken, _ := authapp.Generate(1, 1, "testuser")
+	httpReq.Header.Set("Authorization", fmt.Sprintf("Token %s", testToken))
 
 	r.ServeHTTP(w, httpReq)
 
@@ -74,6 +73,14 @@ func TestRoutes_Profiles_Username_Success_Authenticated(t *testing.T) {
 }
 
 func TestRoutes_Profiles_Username_Success_Unauthenticated(t *testing.T) {
+	r = gin.New()
+	g = r.Group("/api")
+	w = httptest.NewRecorder()
+	ctx, _ = gin.CreateTestContext(w)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockLogic = app.NewMockLogic(ctrl)
+
 	// Given
 	resp := dto.GetProfileResponse{
 		Username:  "targetuser",
@@ -91,8 +98,6 @@ func TestRoutes_Profiles_Username_Success_Unauthenticated(t *testing.T) {
 		"/api/profiles/targetuser",
 		nil,
 	)
-	ctx.Request = httpReq
-	ctx.Set("authenticated", false)
 
 	r.ServeHTTP(w, httpReq)
 
