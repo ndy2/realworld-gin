@@ -13,8 +13,10 @@ import (
 )
 
 func TestAuthenticationHandler(t *testing.T) {
-	ctrl := gomock.NewController(t)
 	gin.SetMode(gin.TestMode)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	type want struct {
 		status int
 		resp   dto.LoginResponse

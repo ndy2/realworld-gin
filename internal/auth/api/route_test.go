@@ -10,31 +10,13 @@ import (
 	"ndy/realworld-gin/internal/auth/dto"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
 
-var r *gin.Engine
-var g *gin.RouterGroup
-var w *httptest.ResponseRecorder
-var mockLogic *app.MockLogic
-
-func TestMain(m *testing.M) {
-	gin.SetMode(gin.TestMode)
-	r = gin.New()
-	g = r.Group("/api")
-	w = httptest.NewRecorder()
-
-	ctrl := gomock.NewController(nil)
-	defer ctrl.Finish()
-	mockLogic = app.NewMockLogic(ctrl)
-
-	code := m.Run()
-
-	os.Exit(code)
-}
-
 func TestRoutes_Post_Users_Login_Success(t *testing.T) {
+	r, g, w, ctrl, mockLogic := setupRoutes(t)
+	defer ctrl.Finish()
+
 	// Given
 	data, _ := json.Marshal(map[string]dto.LoginRequest{
 		"user": {
@@ -67,4 +49,15 @@ func TestRoutes_Post_Users_Login_Success(t *testing.T) {
 
 	assert.Equal(t, wantStatus, w.Code)
 	assert.JSONEq(t, string(wantResp), w.Body.String())
+}
+
+func setupRoutes(t *testing.T) (*gin.Engine, *gin.RouterGroup, *httptest.ResponseRecorder, *gomock.Controller, *app.MockLogic) {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	g := r.Group("/api")
+	w := httptest.NewRecorder()
+	ctrl := gomock.NewController(t)
+	mockLogic := app.NewMockLogic(ctrl)
+
+	return r, g, w, ctrl, mockLogic
 }

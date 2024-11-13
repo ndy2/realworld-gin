@@ -10,33 +10,12 @@ import (
 	"ndy/realworld-gin/internal/profile/dto"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
 
-var r *gin.Engine
-var g *gin.RouterGroup
-var w *httptest.ResponseRecorder
-var ctx *gin.Context
-
-var mockLogic *app.MockLogic
-
-func TestMain(m *testing.M) {
-	gin.SetMode(gin.TestMode)
-
-	code := m.Run()
-
-	os.Exit(code)
-}
-
-func TestRoutes_Profiles_Username_Success_Authenticated(t *testing.T) {
-	r = gin.New()
-	g = r.Group("/api")
-	w = httptest.NewRecorder()
-	ctx, _ = gin.CreateTestContext(w)
-	ctrl := gomock.NewController(t)
+func TestRoutes_Get_Profiles_Username_Success_Authenticated(t *testing.T) {
+	r, g, w, ctrl, mockLogic := setupRoutes(t)
 	defer ctrl.Finish()
-	mockLogic = app.NewMockLogic(ctrl)
 
 	// Given
 	resp := dto.GetProfileResponse{
@@ -72,14 +51,9 @@ func TestRoutes_Profiles_Username_Success_Authenticated(t *testing.T) {
 	}`, w.Body.String())
 }
 
-func TestRoutes_Profiles_Username_Success_Unauthenticated(t *testing.T) {
-	r = gin.New()
-	g = r.Group("/api")
-	w = httptest.NewRecorder()
-	ctx, _ = gin.CreateTestContext(w)
-	ctrl := gomock.NewController(t)
+func TestRoutes_Get_Profiles_Username_Success_Unauthenticated(t *testing.T) {
+	r, g, w, ctrl, mockLogic := setupRoutes(t)
 	defer ctrl.Finish()
-	mockLogic = app.NewMockLogic(ctrl)
 
 	// Given
 	resp := dto.GetProfileResponse{
@@ -111,4 +85,15 @@ func TestRoutes_Profiles_Username_Success_Unauthenticated(t *testing.T) {
 			"following": false
 		}
 	}`, w.Body.String())
+}
+
+func setupRoutes(t *testing.T) (*gin.Engine, *gin.RouterGroup, *httptest.ResponseRecorder, *gomock.Controller, *app.MockLogic) {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	g := r.Group("/api")
+	w := httptest.NewRecorder()
+	ctrl := gomock.NewController(t)
+	mockLogic := app.NewMockLogic(ctrl)
+
+	return r, g, w, ctrl, mockLogic
 }
