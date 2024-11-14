@@ -11,22 +11,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
 
-    - name: Test
-      run: go test -coverprofile=test.coverage.tmp  -coverpkg=$(go list ./... | paste -sd ',' -) ./...  && cat test.coverage.tmp | grep -v 'mock' > test.coverage && go tool cover -func test.coverage
+      - name: Test
+        run:
+          - go test -coverprofile=test.coverage.tmp  -coverpkg=$(go list ./... | paste -sd ',' -) ./...  && cat test.coverage.tmp | grep -v 'mock' > test.coverage && go tool cover -func test.coverage
+          - go tool cover -html=test.coverage -o test.coverage.html
 
-    - name: check test coverage
-      uses: vladopajic/go-test-coverage@v2
-      with:
-        profile: test.coverage
-        local-prefix: github.com/org/project
-        threshold-file: 0
-        threshold-package: 0
-        threshold-total: 0
-        git-token: ${{ github.ref_name == 'main' && secrets.GITHUB_TOKEN || '' }}
-        git-branch: badges
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: test.coverage.html
+          path: 'test.coverage.html'
+
+
+      - name: check test coverage
+        uses: vladopajic/go-test-coverage@v2
+        with:
+          profile: test.coverage
+          local-prefix: github.com/org/project
+          threshold-file: 0
+          threshold-package: 0
+          threshold-total: 0
+          git-token: ${{ github.ref_name == 'main' && secrets.GITHUB_TOKEN || '' }}
+          git-branch: badges
