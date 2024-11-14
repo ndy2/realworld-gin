@@ -43,13 +43,19 @@ func (l LogicImpl) Register(
 		return 0, err
 	}
 	// 사용자를 등록합니다.
-	id, err := l.repo.InsertUser(domain.User{
-		Username: username,
-		Email:    email,
-		Password: string(hashedPassword),
+	id, err := l.repo.InsertUserProfile(domain.UserProfile{
+		User: domain.User{
+			Username: username,
+			Email:    email,
+			Password: string(hashedPassword),
+		},
+		Profile: domain.Profile{
+			Bio:   "",
+			Image: "",
+		},
 	})
 	if err != nil {
-		util.Log.Error("InsertUser failed", zap.Error(err))
+		util.Log.Error("InsertUserProfile failed", zap.Error(err))
 		return 0, err
 	}
 

@@ -41,14 +41,14 @@ func (repo *MysqlRepo) CheckUserExists(email string) (bool, error) {
 	return exists, nil
 }
 
-// InsertUser 는 새로운 사용자를 데이터베이스에 등록하고 새 사용자 ID를 반환합니다.
-func (repo *MysqlRepo) InsertUser(u domain.User) (int, error) {
+// InsertUserProfile 는 새로운 사용자/프로필을 데이터베이스에 등록하고 새 사용자 ID를 반환합니다.
+func (repo *MysqlRepo) InsertUserProfile(up domain.UserProfile) (int, error) {
 	query := `INSERT INTO users (username, email, password, created_at, updated_at) 
 			  VALUES (:username, :email, :password, :created_at, :updated_at)`
 	result, err := repo.DB.NamedExec(query, table.UserRow{
-		Username:  u.Username,
-		Email:     u.Email,
-		Password:  u.Password,
+		Username:  up.Username,
+		Email:     up.Email,
+		Password:  up.Password,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	})
@@ -65,7 +65,7 @@ func (repo *MysqlRepo) InsertUser(u domain.User) (int, error) {
 	}
 
 	// 새로운 프로필을 등록합니다.
-	_, err = repo.insertProfile(int(userID))
+	_, err = repo.insertProfile(int(userID), up.Profile)
 	if err != nil {
 		util.Log.Error("InsertUser failed", zap.Error(err))
 		return 0, err
@@ -75,15 +75,15 @@ func (repo *MysqlRepo) InsertUser(u domain.User) (int, error) {
 }
 
 // insertProfile 는 새로운 프로필을 데이터베이스에 등록하고 새 프로필 ID를 반환합니다.
-func (repo *MysqlRepo) insertProfile(userId int) (int, error) {
+func (repo *MysqlRepo) insertProfile(userId int, p domain.Profile) (int, error) {
 	query := `
 		INSERT INTO profiles (user_id, bio, image, created_at, updated_at) 
 		VALUES (:user_id, :bio, :image, :created_at, :updated_at)
 	`
 	result, err := repo.DB.NamedExec(query, table.ProfileRow{
 		UserID:    userId,
-		Bio:       "",
-		Image:     "",
+		Bio:       p.Bio,
+		Image:     p.Image,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	})

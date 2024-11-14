@@ -86,7 +86,7 @@ func TestMysqlRepo_FindProfileByID(t *testing.T) {
 	}
 }
 
-func TestMysqlRepo_InsertUser(t *testing.T) {
+func TestMysqlRepo_InsertUserProfile(t *testing.T) {
 	mock.ExpectExec("INSERT INTO users").
 		WithArgs("test", "test@mail.com", "password", sqlmock.AnyArg(), sqlmock.AnyArg()).
 		WillReturnResult(sqlmock.NewResult(1, 1)) // (ID, RowsAffected)
@@ -96,7 +96,7 @@ func TestMysqlRepo_InsertUser(t *testing.T) {
 		WillReturnResult(sqlmock.NewResult(1, 1)) // (ID, RowsAffected)
 
 	type args struct {
-		u domain.User
+		up domain.UserProfile
 	}
 	tests := []struct {
 		name    string
@@ -106,10 +106,12 @@ func TestMysqlRepo_InsertUser(t *testing.T) {
 	}{
 		{
 			name: "insert user",
-			args: args{u: domain.User{
-				Username: "test",
-				Email:    "test@mail.com",
-				Password: "password",
+			args: args{up: domain.UserProfile{
+				User: domain.User{
+					Username: "test",
+					Email:    "test@mail.com",
+					Password: "password",
+				},
 			}},
 			want:    1,
 			wantErr: false,
@@ -118,7 +120,7 @@ func TestMysqlRepo_InsertUser(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &MysqlRepo{db}
-			got, err := repo.InsertUser(tt.args.u)
+			got, err := repo.InsertUserProfile(tt.args.up)
 			assert.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, got)
 		})
