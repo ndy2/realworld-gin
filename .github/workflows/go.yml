@@ -25,7 +25,7 @@ jobs:
             go tool cover -html=test.coverage -o test.coverage.html
 
       - name: Upload test coverage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test.coverage.html
           path: 'test.coverage.html'
