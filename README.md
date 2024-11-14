@@ -119,8 +119,8 @@ go test ./...
 create coverage report
 
 ```bash
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out
+go test -coverprofile=test.coverage.tmp  -coverpkg=$(go list ./... | paste -sd ',' -) ./...  && cat test.coverage.tmp | grep -v 'mock' > test.coverage && go tool cover -func test.coverage
+go tool cover -html=test.coverage -o coverage.html
 ```
 
 ### Run Integration Tests

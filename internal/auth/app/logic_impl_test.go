@@ -16,6 +16,7 @@ func TestLogicImpl_Login(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
+	mockRepo := domain.NewMockRepo(ctrl)
 
 	type args struct {
 		email    string
@@ -31,7 +32,6 @@ func TestLogicImpl_Login(t *testing.T) {
 		{
 			name: "valid login",
 			repo: func() domain.Repo {
-				mockRepo := domain.NewMockRepo(ctrl)
 				mockRepo.EXPECT().FindUserByEmail("test@example.com").Return(domain.User{
 					Id:       1,
 					Username: "testuser",
@@ -60,7 +60,6 @@ func TestLogicImpl_Login(t *testing.T) {
 		{
 			name: "user not found",
 			repo: func() domain.Repo {
-				mockRepo := domain.NewMockRepo(ctrl)
 				mockRepo.EXPECT().FindUserByEmail("anonymous@example.com").Return(domain.User{}, ErrUserNotFound)
 				return mockRepo
 			}(),
